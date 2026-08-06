@@ -680,6 +680,13 @@ class VSRApp(tk.Tk):
                 "⚠  Need at least 2 training examples to personalize")
             return
 
+        unique_words = set(tuple(l) for l in self.training_labels)
+        if len(unique_words) < 2:
+            self.status_2.set(
+                "⚠  Record examples of at least 2 different words — "
+                "training on one repeated word will overfit badly.")
+            return
+
         self._disable_personalization_buttons()
         self.btn_save.configure(state='disabled')
         self.progress_var.set(0)
@@ -696,13 +703,13 @@ class VSRApp(tk.Tk):
         def worker():
             try:
                 net = personalize(
-                    self.base_state, Xs_t, Ys, k, 'full',
-                    self.vocab, self.BLANK, on_epoch=on_epoch)
+                    self.base_state, Xs_t, Ys, k, 'adapter',
+                    self.vocab, self.BLANK, epochs=15, on_epoch=on_epoch)
                 self.after(0, lambda: self._finetune_done(net))
             except Exception as exc:
                 self.after(0, lambda: self._finetune_error(str(exc)))
 
-        self.status_2.set(f"Fine-tuning on {k} examples…")
+        self.status_2.set(f"Fine-tuning (adapter mode) on {k} examples…")
         threading.Thread(target=worker, daemon=True).start()
 
     def _finetune_progress(self, epoch, total, pct):
