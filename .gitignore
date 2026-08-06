@@ -4,3 +4,6 @@ ua/
 *.tgz
 *.pt
 .ipynb_checkpoints/
+__pycache__/
+demo_log.json
+personalized_*.pt
