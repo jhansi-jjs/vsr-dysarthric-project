@@ -220,7 +220,9 @@ class VSRApp(tk.Tk):
     def __init__(self):
         super().__init__()
         self.title("VSR Live Demo — Speaker-Adaptive Visual Speech Recognition")
-        self.resizable(False, False)
+        self.geometry("1020x750")
+        self.minsize(800, 600)
+        self.resizable(True, True)
         self.protocol("WM_DELETE_WINDOW", self._on_close)
 
         # ---- Load model checkpoint ----
@@ -277,15 +279,43 @@ class VSRApp(tk.Tk):
     # ============================================================
     # UI construction
     # ============================================================
+    def _create_scrollable_tab(self, tab_title):
+        """Helper to create a scrollable tab inside the notebook."""
+        tab = ttk.Frame(self.notebook)
+        self.notebook.add(tab, text=tab_title)
+
+        canvas = tk.Canvas(tab, highlightthickness=0)
+        scrollbar = ttk.Scrollbar(tab, orient="vertical", command=canvas.yview)
+        content_frame = ttk.Frame(canvas)
+
+        content_frame.bind(
+            "<Configure>",
+            lambda e: canvas.configure(scrollregion=canvas.bbox("all"))
+        )
+
+        canvas.create_window((0, 0), window=content_frame, anchor="nw")
+        canvas.configure(yscrollcommand=scrollbar.set)
+
+        # Mouse wheel binding
+        def _on_mousewheel(event):
+            canvas.yview_scroll(int(-1 * (event.delta / 120)), "units")
+
+        canvas.bind_all("<MouseWheel>", _on_mousewheel)
+
+        canvas.pack(side="left", fill="both", expand=True)
+        scrollbar.pack(side="right", fill="y")
+
+        return content_frame
+
     def _build_ui(self):
         style = ttk.Style(self)
         style.theme_use('clam')
         style.configure('TNotebook.Tab', padding=[14, 6],
                         font=('Segoe UI', 10))
         style.configure('Header.TLabel', font=('Segoe UI', 10))
-        style.configure('Result.TLabel', font=('Consolas', 12))
+        style.configure('Result.TLabel', font=('Consolas', 11))
         style.configure('ResultBold.TLabel',
-                        font=('Consolas', 12, 'bold'))
+                        font=('Consolas', 11, 'bold'))
 
         # ---- Notebook ----
         self.notebook = ttk.Notebook(self)
@@ -302,127 +332,146 @@ class VSRApp(tk.Tk):
 
     # ---- Tab 1: Baseline ----
     def _build_baseline_tab(self):
-        tab = ttk.Frame(self.notebook)
-        self.notebook.add(tab, text="  ▶ Baseline Transcription  ")
+        tab = self._create_scrollable_tab("  ▶ Baseline Transcription  ")
 
-        # Preview
-        self.preview_1 = tk.Label(tab, bg='#1a1a1a', width=640, height=480)
-        self.preview_1.pack(padx=10, pady=(10, 6))
+        main_frame = ttk.Frame(tab, padding=10)
+        main_frame.pack(fill='both', expand=True)
 
-        # Status
+        # Left column: Preview & Status
+        left = ttk.Frame(main_frame)
+        left.grid(row=0, column=0, padx=(0, 15), sticky='n')
+
+        self.preview_1 = tk.Label(left, bg='#1a1a1a', width=480, height=360)
+        self.preview_1.pack(padx=2, pady=2)
+
         self.status_1 = tk.StringVar(value="Ready — press Record to begin")
-        ttk.Label(tab, textvariable=self.status_1,
-                  style='Header.TLabel').pack(pady=(2, 4))
+        ttk.Label(left, textvariable=self.status_1,
+                  style='Header.TLabel', wraplength=480).pack(pady=(6, 4))
 
-        # Button
         self.btn_baseline = ttk.Button(
-            tab, text="🎥  Record & Transcribe",
+            left, text="🎥  Record & Transcribe",
             command=self._baseline_record)
-        self.btn_baseline.pack(pady=6)
+        self.btn_baseline.pack(pady=4)
 
-        # Prediction display
-        pf = ttk.LabelFrame(tab, text="Prediction", padding=8)
-        pf.pack(padx=14, pady=(2, 6), fill='x')
+        # Right column: Prediction display & Vocab
+        right = ttk.Frame(main_frame)
+        right.grid(row=0, column=1, sticky='nsew')
+        main_frame.columnconfigure(1, weight=1)
+
+        pf = ttk.LabelFrame(right, text="Prediction", padding=10)
+        pf.pack(fill='x', pady=(0, 10))
 
         self.pred_raw_1 = tk.StringVar(value="—")
         self.pred_grammar_1 = tk.StringVar(value="—")
 
         ttk.Label(pf, text="Raw CTC:",
                   font=('Segoe UI', 9, 'bold')).grid(
-            row=0, column=0, sticky='w', padx=6, pady=3)
+            row=0, column=0, sticky='w', padx=6, pady=4)
         ttk.Label(pf, textvariable=self.pred_raw_1,
-                  style='Result.TLabel', wraplength=540).grid(
-            row=0, column=1, sticky='w', padx=6, pady=3)
+                  style='Result.TLabel', wraplength=380).grid(
+            row=0, column=1, sticky='w', padx=6, pady=4)
 
         ttk.Label(pf, text="Grammar:",
                   font=('Segoe UI', 9, 'bold')).grid(
-            row=1, column=0, sticky='w', padx=6, pady=3)
+            row=1, column=0, sticky='w', padx=6, pady=4)
         lbl_gram = ttk.Label(pf, textvariable=self.pred_grammar_1,
-                             style='ResultBold.TLabel', wraplength=540)
-        lbl_gram.grid(row=1, column=1, sticky='w', padx=6, pady=3)
+                             style='ResultBold.TLabel', wraplength=380)
+        lbl_gram.grid(row=1, column=1, sticky='w', padx=6, pady=4)
         lbl_gram.configure(foreground='#006600')
 
         pf.columnconfigure(1, weight=1)
 
-        # Vocab reference
-        sample = ", ".join(self.vocab[:15])
-        ttk.Label(tab, text=f"Vocab: {sample} … ({self.V} words)",
-                  font=('Segoe UI', 8),
-                  foreground='gray').pack(pady=(0, 8))
+        vf = ttk.LabelFrame(right, text="Vocabulary Reference", padding=10)
+        vf.pack(fill='both', expand=True)
+
+        vocab_str = "\n".join([", ".join(self.vocab[i:i+6]) for i in range(0, len(self.vocab), 6)])
+        ttk.Label(vf, text=vocab_str, font=('Consolas', 9),
+                  foreground='#444444').pack(anchor='w')
 
     # ---- Tab 2: Personalization ----
     def _build_personalization_tab(self):
-        tab = ttk.Frame(self.notebook)
-        self.notebook.add(tab, text="  🔧 Personalization  ")
+        tab = self._create_scrollable_tab("  🔧 Personalization  ")
 
-        # Preview
-        self.preview_2 = tk.Label(tab, bg='#1a1a1a', width=640, height=480)
-        self.preview_2.pack(padx=10, pady=(10, 6))
+        main_frame = ttk.Frame(tab, padding=10)
+        main_frame.pack(fill='both', expand=True)
 
-        # Status
+        # Left column: Preview & Status
+        left = ttk.Frame(main_frame)
+        left.grid(row=0, column=0, padx=(0, 15), sticky='n')
+
+        self.preview_2 = tk.Label(left, bg='#1a1a1a', width=480, height=360)
+        self.preview_2.pack(padx=2, pady=2)
+
         self.status_2 = tk.StringVar(
             value="Collect training examples, then personalize")
-        ttk.Label(tab, textvariable=self.status_2,
-                  style='Header.TLabel').pack(pady=(2, 4))
+        ttk.Label(left, textvariable=self.status_2,
+                  style='Header.TLabel', wraplength=480).pack(pady=(6, 4))
 
-        # ---- Training controls ----
-        tf = ttk.LabelFrame(tab, text="Training Examples", padding=6)
-        tf.pack(padx=14, pady=4, fill='x')
+        # Right column: Controls & Comparison
+        right = ttk.Frame(main_frame)
+        right.grid(row=0, column=1, sticky='nsew')
+        main_frame.columnconfigure(1, weight=1)
+
+        # 1. Training controls
+        tf = ttk.LabelFrame(right, text="1. Collect Training Examples", padding=8)
+        tf.pack(fill='x', pady=(0, 8))
 
         ttk.Label(tf, text="Word to say:").grid(
             row=0, column=0, padx=6, pady=4, sticky='w')
         self.label_var = tk.StringVar(value=self.vocab[0])
         self.label_combo = ttk.Combobox(
             tf, textvariable=self.label_var,
-            values=self.vocab, state='readonly', width=14)
+            values=self.vocab, state='readonly', width=12)
         self.label_combo.grid(row=0, column=1, padx=6, pady=4)
 
         self.collected_var = tk.StringVar(value="Collected: 0 examples")
         ttk.Label(tf, textvariable=self.collected_var,
                   font=('Segoe UI', 9, 'bold')).grid(
-            row=0, column=2, padx=14, pady=4)
+            row=0, column=2, padx=10, pady=4)
+
+        btn_box = ttk.Frame(tf)
+        btn_box.grid(row=1, column=0, columnspan=3, pady=4, sticky='w')
 
         self.btn_record_train = ttk.Button(
-            tf, text="📹  Record Training Example",
+            btn_box, text="📹  Record Training Example",
             command=self._personalize_record_example)
-        self.btn_record_train.grid(
-            row=1, column=0, columnspan=2, padx=6, pady=4)
+        self.btn_record_train.pack(side='left', padx=(6, 8))
 
         self.btn_clear = ttk.Button(
-            tf, text="🗑  Clear All",
+            btn_box, text="🗑  Clear All",
             command=self._clear_training_data)
-        self.btn_clear.grid(row=1, column=2, padx=6, pady=4)
+        self.btn_clear.pack(side='left')
 
-        # ---- Fine-tune controls ----
-        ttk.Separator(tab, orient='horizontal').pack(
-            fill='x', padx=14, pady=6)
+        # 2. Fine-tune controls
+        ff = ttk.LabelFrame(right, text="2. Fine-Tune Model", padding=8)
+        ff.pack(fill='x', pady=(0, 8))
 
         self.btn_personalize = ttk.Button(
-            tab, text="🔧  Personalize (Fine-Tune on Your Examples)",
+            ff, text="🔧  Personalize (Fine-Tune on Your Examples)",
             command=self._run_personalization)
-        self.btn_personalize.pack(pady=4)
+        self.btn_personalize.pack(anchor='w', padx=6, pady=4)
 
         self.progress_var = tk.DoubleVar(value=0)
         self.progress_bar = ttk.Progressbar(
-            tab, variable=self.progress_var, maximum=100, length=420)
-        self.progress_bar.pack(pady=2)
+            ff, variable=self.progress_var, maximum=100, length=380)
+        self.progress_bar.pack(anchor='w', padx=6, pady=2)
 
-        # ---- Compare controls ----
-        ttk.Separator(tab, orient='horizontal').pack(
-            fill='x', padx=14, pady=6)
+        # 3. Compare controls
+        cf = ttk.LabelFrame(right, text="3. Compare Performance (Before vs After)", padding=8)
+        cf.pack(fill='x', pady=(0, 8))
 
         self.btn_compare = ttk.Button(
-            tab, text="🎤  Record & Compare (Before vs After)",
+            cf, text="🎤  Record & Compare (Before vs After)",
             command=self._personalize_compare)
-        self.btn_compare.pack(pady=4)
-
-        cf = ttk.LabelFrame(tab, text="Comparison", padding=8)
-        cf.pack(padx=14, pady=4, fill='x')
+        self.btn_compare.pack(anchor='w', padx=6, pady=4)
 
         self.pred_before_raw = tk.StringVar(value="—")
         self.pred_before_gram = tk.StringVar(value="—")
         self.pred_after_raw = tk.StringVar(value="—")
         self.pred_after_gram = tk.StringVar(value="—")
+
+        grid_frame = ttk.Frame(cf)
+        grid_frame.pack(fill='x', padx=6, pady=2)
 
         row = 0
         for label_text, var, color, bold in [
@@ -431,26 +480,26 @@ class VSRApp(tk.Tk):
             ("AFTER (raw):",      self.pred_after_raw,   '#006600', False),
             ("AFTER (grammar):",  self.pred_after_gram,  '#006600', True),
         ]:
-            ttk.Label(cf, text=label_text,
+            ttk.Label(grid_frame, text=label_text,
                       font=('Segoe UI', 9, 'bold')).grid(
-                row=row, column=0, sticky='w', padx=6, pady=2)
+                row=row, column=0, sticky='w', padx=(0, 6), pady=2)
             sty = 'ResultBold.TLabel' if bold else 'Result.TLabel'
-            lbl = ttk.Label(cf, textvariable=var, style=sty,
-                            wraplength=480)
-            lbl.grid(row=row, column=1, sticky='w', padx=6, pady=2)
+            lbl = ttk.Label(grid_frame, textvariable=var, style=sty,
+                            wraplength=340)
+            lbl.grid(row=row, column=1, sticky='w', padx=4, pady=2)
             lbl.configure(foreground=color)
             row += 1
 
-        cf.columnconfigure(1, weight=1)
+        grid_frame.columnconfigure(1, weight=1)
 
-        # ---- Save model ----
-        ttk.Separator(tab, orient='horizontal').pack(
-            fill='x', padx=14, pady=6)
+        # 4. Save model
+        sf = ttk.LabelFrame(right, text="4. Save Checkpoint", padding=8)
+        sf.pack(fill='x', pady=(0, 4))
 
         self.btn_save = ttk.Button(
-            tab, text="💾  Save Personalized Model",
+            sf, text="💾  Save Personalized Model",
             command=self._save_personalized_model, state='disabled')
-        self.btn_save.pack(pady=(4, 10))
+        self.btn_save.pack(anchor='w', padx=6, pady=2)
 
     # ============================================================
     # Camera preview loop  (runs in main thread via after())
@@ -505,7 +554,7 @@ class VSRApp(tk.Tk):
 
         # ---- Convert to Tkinter image ----
         rgb = cv2.cvtColor(disp, cv2.COLOR_BGR2RGB)
-        img = Image.fromarray(rgb).resize((640, 480))
+        img = Image.fromarray(rgb).resize((480, 360))
         imgtk = ImageTk.PhotoImage(image=img)
 
         # Update the preview label on the visible tab
