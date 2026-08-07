@@ -24,6 +24,10 @@ import torch
 import torch.nn as nn
 
 from grammar_decoder import grammar_constrained_decode
+from phrase_classifier import (
+    PhraseEnrollment, classify_prototype,
+    train_linear_head, classify_linear
+)
 
 # ----------------------------------------------------------------
 # Paths & device
@@ -245,10 +249,16 @@ class VSRApp(tk.Tk):
         self.base_model.load_state_dict(self.base_state)
         self.base_model.eval()
 
-        # Personalization state
+        # Single-word personalization state
         self.personalized_model = None
         self.training_clips = []    # list of np arrays (75,50,100)
         self.training_labels = []   # list of [word_index]
+
+        # AAC Phrase Personalization state
+        self.phrase_enrollment = PhraseEnrollment()
+        self.enrolled_phrases = ["I need water", "Call my mother", "I am in pain"]
+        self.phrase_linear_head = None
+        self.phrase_list_trained = []
 
         # ---- Open camera ----
         self.cap = cv2.VideoCapture(0)
@@ -322,6 +332,7 @@ class VSRApp(tk.Tk):
         self.notebook.pack(padx=10, pady=(10, 4), fill='both', expand=True)
 
         self._build_baseline_tab()
+        self._build_phrase_tab()
         self._build_personalization_tab()
 
         # ---- Footer ----
@@ -388,9 +399,9 @@ class VSRApp(tk.Tk):
         ttk.Label(vf, text=vocab_str, font=('Consolas', 9),
                   foreground='#444444').pack(anchor='w')
 
-    # ---- Tab 2: Personalization ----
-    def _build_personalization_tab(self):
-        tab = self._create_scrollable_tab("  🔧 Personalization  ")
+    # ---- Tab 2: AAC Phrase Classification ----
+    def _build_phrase_tab(self):
+        tab = self._create_scrollable_tab("  💬 Personalized Phrases (AAC)  ")
 
         main_frame = ttk.Frame(tab, padding=10)
         main_frame.pack(fill='both', expand=True)
@@ -401,6 +412,113 @@ class VSRApp(tk.Tk):
 
         self.preview_2 = tk.Label(left, bg='#1a1a1a', width=480, height=360)
         self.preview_2.pack(padx=2, pady=2)
+
+        self.status_aac = tk.StringVar(
+            value="Enroll custom phrases, record examples, then build recognizer.")
+        ttk.Label(left, textvariable=self.status_aac,
+                  style='Header.TLabel', wraplength=480).pack(pady=(6, 4))
+
+        # Right column: Enrollment, Build & Recognition
+        right = ttk.Frame(main_frame)
+        right.grid(row=0, column=1, sticky='nsew')
+        main_frame.columnconfigure(1, weight=1)
+
+        # 1. Enroll Phrases
+        ef = ttk.LabelFrame(right, text="1. Enroll Custom AAC Phrases", padding=8)
+        ef.pack(fill='x', pady=(0, 8))
+
+        entry_frame = ttk.Frame(ef)
+        entry_frame.pack(fill='x', pady=(0, 6))
+
+        ttk.Label(entry_frame, text="Phrase:").pack(side='left', padx=(0, 4))
+        self.phrase_entry = ttk.Entry(entry_frame, width=24)
+        self.phrase_entry.pack(side='left', padx=(0, 6))
+        self.btn_add_phrase = ttk.Button(entry_frame, text="➕ Add Phrase", command=self._add_phrase)
+        self.btn_add_phrase.pack(side='left')
+
+        list_frame = ttk.Frame(ef)
+        list_frame.pack(fill='x', pady=2)
+
+        self.phrase_listbox = tk.Listbox(list_frame, height=4, selectmode='single', font=('Segoe UI', 9))
+        self.phrase_listbox.pack(side='left', fill='both', expand=True)
+
+        lb_scroll = ttk.Scrollbar(list_frame, orient='vertical', command=self.phrase_listbox.yview)
+        lb_scroll.pack(side='right', fill='y')
+        self.phrase_listbox.config(yscrollcommand=lb_scroll.set)
+
+        self.btn_remove_phrase = ttk.Button(ef, text="🗑 Remove Selected", command=self._remove_phrase)
+        self.btn_remove_phrase.pack(anchor='w', pady=(4, 0))
+
+        # Populate initial listbox items
+        self._update_phrase_listbox()
+
+        # 2. Record Examples
+        rf = ttk.LabelFrame(right, text="2. Record Training Examples", padding=8)
+        rf.pack(fill='x', pady=(0, 8))
+
+        self.btn_record_phrase_example = ttk.Button(
+            rf, text="📹  Record Example for Selected Phrase",
+            command=self._record_phrase_example)
+        self.btn_record_phrase_example.pack(anchor='w', padx=4, pady=2)
+
+        ttk.Label(rf, text="Record 3-5 examples per phrase for optimal accuracy.",
+                  font=('Segoe UI', 8), foreground='gray').pack(anchor='w', padx=4)
+
+        # 3. Build Recognizer
+        bf = ttk.LabelFrame(right, text="3. Build Recognizer", padding=8)
+        bf.pack(fill='x', pady=(0, 8))
+
+        self.btn_build_phrase_recognizer = ttk.Button(
+            bf, text="⚡  Build Recognizer (Layer 1 + Layer 2)",
+            command=self._build_phrase_recognizer)
+        self.btn_build_phrase_recognizer.pack(anchor='w', padx=4, pady=2)
+
+        self.phrase_progress_var = tk.DoubleVar(value=0)
+        self.phrase_progress_bar = ttk.Progressbar(
+            bf, variable=self.phrase_progress_var, maximum=100, length=380)
+        self.phrase_progress_bar.pack(anchor='w', padx=4, pady=2)
+
+        # 4. Phrase Recognition
+        cf = ttk.LabelFrame(right, text="4. Phrase Recognition", padding=8)
+        cf.pack(fill='x', pady=(0, 4))
+
+        self.btn_recognize_phrase = ttk.Button(
+            cf, text="🎤  Record & Recognize Phrase",
+            command=self._recognize_phrase)
+        self.btn_recognize_phrase.pack(anchor='w', padx=4, pady=(2, 6))
+
+        res_frame = ttk.LabelFrame(cf, text="Ranked Matches (Top-3)", padding=6)
+        res_frame.pack(fill='x', padx=4, pady=2)
+
+        self.phrase_result_1 = tk.StringVar(value="1. —")
+        self.phrase_result_2 = tk.StringVar(value="2. —")
+        self.phrase_result_3 = tk.StringVar(value="3. —")
+
+        lbl1 = ttk.Label(res_frame, textvariable=self.phrase_result_1, style='ResultBold.TLabel', wraplength=360)
+        lbl1.pack(anchor='w', pady=1)
+        lbl1.configure(foreground='#006600')
+
+        lbl2 = ttk.Label(res_frame, textvariable=self.phrase_result_2, style='Result.TLabel', wraplength=360)
+        lbl2.pack(anchor='w', pady=1)
+        lbl2.configure(foreground='#333333')
+
+        lbl3 = ttk.Label(res_frame, textvariable=self.phrase_result_3, style='Result.TLabel', wraplength=360)
+        lbl3.pack(anchor='w', pady=1)
+        lbl3.configure(foreground='#666666')
+
+    # ---- Tab 3: Single-Word Adaptation ----
+    def _build_personalization_tab(self):
+        tab = self._create_scrollable_tab("  🔧 Single-Word Adaptation  ")
+
+        main_frame = ttk.Frame(tab, padding=10)
+        main_frame.pack(fill='both', expand=True)
+
+        # Left column: Preview & Status
+        left = ttk.Frame(main_frame)
+        left.grid(row=0, column=0, padx=(0, 15), sticky='n')
+
+        self.preview_3 = tk.Label(left, bg='#1a1a1a', width=480, height=360)
+        self.preview_3.pack(padx=2, pady=2)
 
         self.status_2 = tk.StringVar(
             value="Collect training examples, then personalize")
@@ -559,7 +677,12 @@ class VSRApp(tk.Tk):
 
         # Update the preview label on the visible tab
         current = self.notebook.index(self.notebook.select())
-        target = self.preview_1 if current == 0 else self.preview_2
+        if current == 0:
+            target = self.preview_1
+        elif current == 1:
+            target = self.preview_2
+        else:
+            target = getattr(self, 'preview_3', self.preview_1)
         target.configure(image=imgtk)
         target.imgtk = imgtk  # prevent GC
 
@@ -630,6 +753,200 @@ class VSRApp(tk.Tk):
         self.pred_grammar_1.set(gram_text)
         self.status_1.set("Done — press Record to try again")
         self.btn_baseline.configure(state='normal')
+
+    # ============================================================
+    # Tab 2: AAC Phrase Classification Event Handlers
+    # ============================================================
+    def _update_phrase_listbox(self):
+        self.phrase_listbox.delete(0, tk.END)
+        for phrase in self.enrolled_phrases:
+            count = self.phrase_enrollment.example_count(phrase)
+            self.phrase_listbox.insert(tk.END, f"{phrase} ({count} examples)")
+
+    def _disable_phrase_buttons(self):
+        for btn in (self.btn_add_phrase, self.btn_remove_phrase,
+                    self.btn_record_phrase_example,
+                    self.btn_build_phrase_recognizer, self.btn_recognize_phrase):
+            btn.configure(state='disabled')
+
+    def _enable_phrase_buttons(self):
+        for btn in (self.btn_add_phrase, self.btn_remove_phrase,
+                    self.btn_record_phrase_example,
+                    self.btn_build_phrase_recognizer, self.btn_recognize_phrase):
+            btn.configure(state='normal')
+
+    def _add_phrase(self):
+        phrase = self.phrase_entry.get().strip()
+        if not phrase:
+            return
+        if phrase not in self.enrolled_phrases:
+            self.enrolled_phrases.append(phrase)
+            self._update_phrase_listbox()
+            self.phrase_entry.delete(0, tk.END)
+            self.status_aac.set(f"Added phrase: '{phrase}'")
+            log_demo_run({
+                "timestamp": datetime.now().isoformat(),
+                "mode": "phrase_enrolled",
+                "phrase": phrase
+            })
+
+    def _remove_phrase(self):
+        sel = self.phrase_listbox.curselection()
+        if not sel:
+            return
+        idx = sel[0]
+        phrase = self.enrolled_phrases[idx]
+        self.enrolled_phrases.pop(idx)
+        self.phrase_enrollment.remove_phrase(phrase)
+        self._update_phrase_listbox()
+        self.status_aac.set(f"Removed phrase: '{phrase}'")
+
+    def _record_phrase_example(self):
+        sel = self.phrase_listbox.curselection()
+        if not sel:
+            self.status_aac.set("⚠ Select a phrase from the listbox first!")
+            messagebox.showwarning("Select Phrase", "Please select a phrase from the listbox before recording.")
+            return
+        idx = sel[0]
+        phrase = self.enrolled_phrases[idx]
+
+        self._disable_phrase_buttons()
+        self.status_aac.set(f"Get ready to speak: '{phrase}'...")
+
+        def on_clip(clip, err):
+            if clip is None:
+                self.status_aac.set(f"⚠ {err}")
+                self._enable_phrase_buttons()
+                return
+
+            self.status_aac.set("Extracting embedding & adding example...")
+
+            def worker():
+                self.phrase_enrollment.add_example(phrase, clip, self.base_model, device)
+                count = self.phrase_enrollment.example_count(phrase)
+
+                log_demo_run({
+                    "timestamp": datetime.now().isoformat(),
+                    "mode": "phrase_enrollment_example",
+                    "phrase": phrase,
+                    "example_count": count
+                })
+
+                self.after(0, lambda: self._on_phrase_example_added(phrase, count))
+
+            threading.Thread(target=worker, daemon=True).start()
+
+        self._start_recording(on_clip)
+
+    def _on_phrase_example_added(self, phrase, count):
+        self._update_phrase_listbox()
+        self.status_aac.set(f"✓ Recorded example {count} for '{phrase}'")
+        self._enable_phrase_buttons()
+
+    def _build_phrase_recognizer(self):
+        ready, msg = self.phrase_enrollment.is_ready(min_per_phrase=2, min_phrases=2)
+        if not ready:
+            self.status_aac.set(f"⚠ {msg}")
+            messagebox.showwarning("Enrollment Not Ready", msg)
+            return
+
+        self._disable_phrase_buttons()
+        self.phrase_progress_var.set(0)
+        self.status_aac.set("Building recognizer (Layer 1 ready, training Layer 2)...")
+
+        def on_epoch(ep, total):
+            pct = (ep / total) * 100
+            self.after(0, lambda p=pct, e=ep, t=total: (
+                self.phrase_progress_var.set(p),
+                self.status_aac.set(f"Training Layer 2 Linear Head... epoch {e}/{t}")
+            ))
+
+        def worker():
+            try:
+                embedding_dim = 512
+                head, phrase_list = train_linear_head(
+                    self.phrase_enrollment, embedding_dim=embedding_dim, epochs=30, lr=1e-3, on_epoch=on_epoch
+                )
+                log_demo_run({
+                    "timestamp": datetime.now().isoformat(),
+                    "mode": "phrase_recognizer_built",
+                    "phrases": phrase_list,
+                    "example_counts": {p: self.phrase_enrollment.example_count(p) for p in phrase_list}
+                })
+                self.after(0, lambda: self._on_phrase_recognizer_done(head, phrase_list))
+            except Exception as exc:
+                self.after(0, lambda: self._on_phrase_recognizer_error(str(exc)))
+
+        threading.Thread(target=worker, daemon=True).start()
+
+    def _on_phrase_recognizer_done(self, head, phrase_list):
+        self.phrase_linear_head = head
+        self.phrase_list_trained = phrase_list
+        self.phrase_progress_var.set(100)
+        self.status_aac.set("✓ Recognizer Built! (Layer 1 Prototype + Layer 2 Linear Head Ready)")
+        self._enable_phrase_buttons()
+
+    def _on_phrase_recognizer_error(self, err):
+        self.status_aac.set(f"⚠ Training error: {err}")
+        self._enable_phrase_buttons()
+
+    def _recognize_phrase(self):
+        if len(self.phrase_enrollment.prototypes) == 0:
+            self.status_aac.set("⚠ Record at least 1 example before recognizing!")
+            messagebox.showwarning("No Examples", "Please record at least 1 phrase example before recognizing.")
+            return
+
+        self._disable_phrase_buttons()
+        self.status_aac.set("Get ready to lip-sign a phrase...")
+        self.phrase_result_1.set("1. Recognizing...")
+        self.phrase_result_2.set("2. ...")
+        self.phrase_result_3.set("3. ...")
+
+        def on_clip(clip, err):
+            if clip is None:
+                self.status_aac.set(f"⚠ {err}")
+                self._enable_phrase_buttons()
+                return
+
+            self.status_aac.set("Classifying phrase...")
+
+            def worker():
+                proto_ranked = classify_prototype(clip, self.phrase_enrollment, self.base_model, device, top_k=3)
+                linear_ranked = None
+                if self.phrase_linear_head is not None:
+                    linear_ranked = classify_linear(clip, self.phrase_linear_head, self.phrase_list_trained, self.base_model, device, top_k=3)
+
+                log_demo_run({
+                    "timestamp": datetime.now().isoformat(),
+                    "mode": "phrase_recognition",
+                    "prototype_results": proto_ranked,
+                    "linear_results": linear_ranked
+                })
+
+                self.after(0, lambda: self._on_phrase_recognition_done(proto_ranked, linear_ranked))
+
+            threading.Thread(target=worker, daemon=True).start()
+
+        self._start_recording(on_clip)
+
+    def _on_phrase_recognition_done(self, proto_ranked, linear_ranked):
+        res_vars = [self.phrase_result_1, self.phrase_result_2, self.phrase_result_3]
+
+        for i in range(3):
+            if i < len(proto_ranked):
+                p_phrase, p_score = proto_ranked[i]
+                pct = max(0.0, min(100.0, p_score * 100))
+                line = f"{i+1}. \"{p_phrase}\" — Prototype Sim: {pct:.1f}%"
+                if linear_ranked and i < len(linear_ranked):
+                    l_phrase, l_prob = linear_ranked[i]
+                    line += f"  │  Linear Prob: {l_prob*100:.1f}%"
+                res_vars[i].set(line)
+            else:
+                res_vars[i].set(f"{i+1}. —")
+
+        top_phrase = proto_ranked[0][0] if proto_ranked else "Unknown"
+        self.status_aac.set(f"✓ Recognized: \"{top_phrase}\"")
+        self._enable_phrase_buttons()
 
     # ============================================================
     # Tab 2: Personalization — collect training examples

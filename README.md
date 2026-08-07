@@ -151,6 +151,7 @@ VSR_project/
 ├── VSR_Complete_Project_LOCAL.ipynb   ← full training notebook (Steps 0–9)
 ├── live_demo.py                      ← CLI-based webcam demo (baseline + personalize)
 ├── vsr_app.py                        ← 🖥️  Desktop GUI application (Tkinter)
+├── phrase_classifier.py             ← 💬 AAC-style personalized phrase classification
 ├── grammar_decoder.py                ← GRID grammar-constrained post-processing
 ├── results.json                      ← k-sweep experiment results
 ├── fig_data_efficiency.png           ← data efficiency plot
