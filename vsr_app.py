@@ -23,6 +23,7 @@ import numpy as np
 import torch
 import torch.nn as nn
 
+from grammar_constrain import grammar_constrain
 from grammar_decoder import grammar_constrained_decode
 from phrase_classifier import (
     PhraseEnrollment, classify_prototype,
@@ -727,8 +728,8 @@ class VSRApp(tk.Tk):
                                  self.BLANK)
                 raw_text = (' '.join(hyp) if hyp
                             else '(nothing detected)')
-                gram = grammar_constrained_decode(hyp)
-                gram_text = (gram["sentence"] if gram["sentence"]
+                constrained = grammar_constrain(hyp)
+                gram_text = (' '.join(constrained) if constrained
                              else '(nothing detected)')
 
                 # Log to demo_log.json
@@ -736,9 +737,7 @@ class VSRApp(tk.Tk):
                     "timestamp": datetime.now().isoformat(),
                     "mode": "baseline",
                     "raw_prediction": hyp,
-                    "grammar_prediction": gram["corrected_words"],
-                    "grammar_changes": gram["changes"],
-                    "grammar_warning": gram.get("warning"),
+                    "grammar_prediction": constrained,
                 })
 
                 self.after(0, lambda: self._baseline_done(
@@ -1085,12 +1084,12 @@ class VSRApp(tk.Tk):
                 raw_a = (' '.join(hyp_after) if hyp_after
                          else '(nothing detected)')
 
-                gram_b = grammar_constrained_decode(hyp_before)
-                gram_a = grammar_constrained_decode(hyp_after)
+                constrained_b = grammar_constrain(hyp_before)
+                constrained_a = grammar_constrain(hyp_after)
 
-                gram_b_text = (gram_b["sentence"] if gram_b["sentence"]
+                gram_b_text = (' '.join(constrained_b) if constrained_b
                                else '(nothing detected)')
-                gram_a_text = (gram_a["sentence"] if gram_a["sentence"]
+                gram_a_text = (' '.join(constrained_a) if constrained_a
                                else '(nothing detected)')
 
                 # Log EVERYTHING
@@ -1100,10 +1099,8 @@ class VSRApp(tk.Tk):
                     "training_examples": len(self.training_clips),
                     "before_raw": hyp_before,
                     "after_raw": hyp_after,
-                    "before_grammar": gram_b["corrected_words"],
-                    "after_grammar": gram_a["corrected_words"],
-                    "before_grammar_changes": gram_b["changes"],
-                    "after_grammar_changes": gram_a["changes"],
+                    "before_grammar": constrained_b,
+                    "after_grammar": constrained_a,
                 })
 
                 self.after(0, lambda: self._compare_done(
