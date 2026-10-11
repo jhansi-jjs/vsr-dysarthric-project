@@ -1,145 +1,1117 @@
 {
   "F05": {
-    "adapter": [
-      {
-        "k": 0,
-        "wer": 580.0,
-        "cer": 558.6666666666666,
-        "n_query": 5
-      },
-      {
-        "k": 1,
-        "wer": 560.0,
-        "cer": 564.6666666666666,
-        "n_query": 5
-      },
-      {
-        "k": 3,
-        "wer": 280.0,
-        "cer": 248.66666666666669,
-        "n_query": 5
-      },
-      {
-        "k": 5,
-        "wer": 100.0,
-        "cer": 86.0,
-        "n_query": 5
-      },
-      {
-        "k": 10,
-        "wer": 100.0,
-        "cer": 90.0,
-        "n_query": 5
-      },
-      {
-        "k": 20,
-        "wer": 100.0,
-        "cer": 96.66666666666666,
-        "n_query": 5
-      }
-    ],
     "full": [
       {
         "k": 0,
-        "wer": 580.0,
-        "cer": 558.6666666666666,
-        "n_query": 5
+        "top1_acc_mean": 20.0,
+        "top1_acc_std": 0.0,
+        "top3_acc_mean": 30.0,
+        "top3_acc_std": 0.0,
+        "constrained_wer_mean": 80.0,
+        "constrained_wer_std": 0.0,
+        "raw_wer_mean": 590.0,
+        "raw_wer_std": 0.0,
+        "raw_cer_mean": 572.5,
+        "raw_cer_std": 0.0,
+        "n_test": 10,
+        "seeds": [
+          {
+            "top1_acc": 20.0,
+            "top3_acc": 30.0,
+            "constrained_wer": 80.0,
+            "raw_wer": 590.0,
+            "raw_cer": 572.5,
+            "n": 10
+          }
+        ]
       },
       {
         "k": 1,
-        "wer": 459.99999999999994,
-        "cer": 473.3333333333333,
-        "n_query": 5
+        "top1_acc_mean": 12.0,
+        "top1_acc_std": 4.0,
+        "top3_acc_mean": 32.0,
+        "top3_acc_std": 4.0,
+        "constrained_wer_mean": 88.0,
+        "constrained_wer_std": 4.0,
+        "raw_wer_mean": 326.0,
+        "raw_wer_std": 52.38320341483518,
+        "raw_cer_mean": 319.3666666666667,
+        "raw_cer_std": 71.38163473735929,
+        "n_test": 10,
+        "seeds": [
+          {
+            "top1_acc": 10.0,
+            "top3_acc": 30.0,
+            "constrained_wer": 90.0,
+            "raw_wer": 320.0,
+            "raw_cer": 295.49999999999994,
+            "n": 10
+          },
+          {
+            "top1_acc": 10.0,
+            "top3_acc": 30.0,
+            "constrained_wer": 90.0,
+            "raw_wer": 270.0,
+            "raw_cer": 244.33333333333334,
+            "n": 10
+          },
+          {
+            "top1_acc": 20.0,
+            "top3_acc": 30.0,
+            "constrained_wer": 80.0,
+            "raw_wer": 370.0,
+            "raw_cer": 374.0,
+            "n": 10
+          },
+          {
+            "top1_acc": 10.0,
+            "top3_acc": 40.0,
+            "constrained_wer": 90.0,
+            "raw_wer": 400.0,
+            "raw_cer": 429.0,
+            "n": 10
+          },
+          {
+            "top1_acc": 10.0,
+            "top3_acc": 30.0,
+            "constrained_wer": 90.0,
+            "raw_wer": 270.0,
+            "raw_cer": 254.0,
+            "n": 10
+          }
+        ]
       },
       {
         "k": 3,
-        "wer": 180.0,
-        "cer": 208.66666666666669,
-        "n_query": 5
+        "top1_acc_mean": 14.0,
+        "top1_acc_std": 8.0,
+        "top3_acc_mean": 36.0,
+        "top3_acc_std": 10.198039027185569,
+        "constrained_wer_mean": 86.0,
+        "constrained_wer_std": 8.0,
+        "raw_wer_mean": 168.0,
+        "raw_wer_std": 67.34983296193094,
+        "raw_cer_mean": 164.7666666666667,
+        "raw_cer_std": 65.39865781837152,
+        "n_test": 10,
+        "seeds": [
+          {
+            "top1_acc": 20.0,
+            "top3_acc": 30.0,
+            "constrained_wer": 80.0,
+            "raw_wer": 240.0,
+            "raw_cer": 245.00000000000003,
+            "n": 10
+          },
+          {
+            "top1_acc": 10.0,
+            "top3_acc": 20.0,
+            "constrained_wer": 90.0,
+            "raw_wer": 90.0,
+            "raw_cer": 90.83333333333331,
+            "n": 10
+          },
+          {
+            "top1_acc": 20.0,
+            "top3_acc": 50.0,
+            "constrained_wer": 80.0,
+            "raw_wer": 160.0,
+            "raw_cer": 165.83333333333337,
+            "n": 10
+          },
+          {
+            "top1_acc": 0.0,
+            "top3_acc": 40.0,
+            "constrained_wer": 100.0,
+            "raw_wer": 100.0,
+            "raw_cer": 92.33333333333333,
+            "n": 10
+          },
+          {
+            "top1_acc": 20.0,
+            "top3_acc": 40.0,
+            "constrained_wer": 80.0,
+            "raw_wer": 250.0,
+            "raw_cer": 229.83333333333334,
+            "n": 10
+          }
+        ]
       },
       {
         "k": 5,
-        "wer": 80.0,
-        "cer": 65.99999999999999,
-        "n_query": 5
+        "top1_acc_mean": 8.0,
+        "top1_acc_std": 7.483314773547883,
+        "top3_acc_mean": 30.0,
+        "top3_acc_std": 14.142135623730951,
+        "constrained_wer_mean": 92.0,
+        "constrained_wer_std": 7.483314773547883,
+        "raw_wer_mean": 92.0,
+        "raw_wer_std": 7.483314773547883,
+        "raw_cer_mean": 86.06666666666668,
+        "raw_cer_std": 8.700319278943477,
+        "n_test": 10,
+        "seeds": [
+          {
+            "top1_acc": 10.0,
+            "top3_acc": 20.0,
+            "constrained_wer": 90.0,
+            "raw_wer": 90.0,
+            "raw_cer": 78.0,
+            "n": 10
+          },
+          {
+            "top1_acc": 0.0,
+            "top3_acc": 10.0,
+            "constrained_wer": 100.0,
+            "raw_wer": 100.0,
+            "raw_cer": 96.83333333333334,
+            "n": 10
+          },
+          {
+            "top1_acc": 20.0,
+            "top3_acc": 40.0,
+            "constrained_wer": 80.0,
+            "raw_wer": 80.0,
+            "raw_cer": 74.33333333333334,
+            "n": 10
+          },
+          {
+            "top1_acc": 0.0,
+            "top3_acc": 30.0,
+            "constrained_wer": 100.0,
+            "raw_wer": 100.0,
+            "raw_cer": 93.66666666666666,
+            "n": 10
+          },
+          {
+            "top1_acc": 10.0,
+            "top3_acc": 50.0,
+            "constrained_wer": 90.0,
+            "raw_wer": 90.0,
+            "raw_cer": 87.5,
+            "n": 10
+          }
+        ]
       },
       {
         "k": 10,
-        "wer": 100.0,
-        "cer": 90.0,
-        "n_query": 5
+        "top1_acc_mean": 14.0,
+        "top1_acc_std": 12.0,
+        "top3_acc_mean": 34.0,
+        "top3_acc_std": 8.0,
+        "constrained_wer_mean": 86.0,
+        "constrained_wer_std": 12.0,
+        "raw_wer_mean": 86.0,
+        "raw_wer_std": 12.0,
+        "raw_cer_mean": 77.3,
+        "raw_cer_std": 11.383906769353537,
+        "n_test": 10,
+        "seeds": [
+          {
+            "top1_acc": 20.0,
+            "top3_acc": 30.0,
+            "constrained_wer": 80.0,
+            "raw_wer": 80.0,
+            "raw_cer": 65.99999999999999,
+            "n": 10
+          },
+          {
+            "top1_acc": 0.0,
+            "top3_acc": 20.0,
+            "constrained_wer": 100.0,
+            "raw_wer": 100.0,
+            "raw_cer": 91.16666666666666,
+            "n": 10
+          },
+          {
+            "top1_acc": 30.0,
+            "top3_acc": 40.0,
+            "constrained_wer": 70.0,
+            "raw_wer": 70.0,
+            "raw_cer": 69.66666666666667,
+            "n": 10
+          },
+          {
+            "top1_acc": 0.0,
+            "top3_acc": 40.0,
+            "constrained_wer": 100.0,
+            "raw_wer": 100.0,
+            "raw_cer": 91.16666666666666,
+            "n": 10
+          },
+          {
+            "top1_acc": 20.0,
+            "top3_acc": 40.0,
+            "constrained_wer": 80.0,
+            "raw_wer": 80.0,
+            "raw_cer": 68.5,
+            "n": 10
+          }
+        ]
       },
       {
         "k": 20,
-        "wer": 100.0,
-        "cer": 103.33333333333334,
-        "n_query": 5
+        "top1_acc_mean": 8.0,
+        "top1_acc_std": 4.0,
+        "top3_acc_mean": 26.0,
+        "top3_acc_std": 4.898979485566356,
+        "constrained_wer_mean": 92.0,
+        "constrained_wer_std": 4.0,
+        "raw_wer_mean": 92.0,
+        "raw_wer_std": 4.0,
+        "raw_cer_mean": 90.3,
+        "raw_cer_std": 4.686149805543994,
+        "n_test": 10,
+        "seeds": [
+          {
+            "top1_acc": 10.0,
+            "top3_acc": 20.0,
+            "constrained_wer": 90.0,
+            "raw_wer": 90.0,
+            "raw_cer": 92.16666666666666,
+            "n": 10
+          },
+          {
+            "top1_acc": 10.0,
+            "top3_acc": 20.0,
+            "constrained_wer": 90.0,
+            "raw_wer": 90.0,
+            "raw_cer": 89.66666666666667,
+            "n": 10
+          },
+          {
+            "top1_acc": 10.0,
+            "top3_acc": 30.0,
+            "constrained_wer": 90.0,
+            "raw_wer": 90.0,
+            "raw_cer": 87.66666666666666,
+            "n": 10
+          },
+          {
+            "top1_acc": 0.0,
+            "top3_acc": 30.0,
+            "constrained_wer": 100.0,
+            "raw_wer": 100.0,
+            "raw_cer": 98.00000000000001,
+            "n": 10
+          },
+          {
+            "top1_acc": 10.0,
+            "top3_acc": 30.0,
+            "constrained_wer": 90.0,
+            "raw_wer": 90.0,
+            "raw_cer": 84.00000000000001,
+            "n": 10
+          }
+        ]
+      }
+    ],
+    "adapter": [
+      {
+        "k": 0,
+        "top1_acc_mean": 20.0,
+        "top1_acc_std": 0.0,
+        "top3_acc_mean": 30.0,
+        "top3_acc_std": 0.0,
+        "constrained_wer_mean": 80.0,
+        "constrained_wer_std": 0.0,
+        "raw_wer_mean": 590.0,
+        "raw_wer_std": 0.0,
+        "raw_cer_mean": 572.5,
+        "raw_cer_std": 0.0,
+        "n_test": 10,
+        "seeds": [
+          {
+            "top1_acc": 20.0,
+            "top3_acc": 30.0,
+            "constrained_wer": 80.0,
+            "raw_wer": 590.0,
+            "raw_cer": 572.5,
+            "n": 10
+          }
+        ]
+      },
+      {
+        "k": 1,
+        "top1_acc_mean": 18.0,
+        "top1_acc_std": 4.0,
+        "top3_acc_mean": 36.0,
+        "top3_acc_std": 4.898979485566356,
+        "constrained_wer_mean": 82.0,
+        "constrained_wer_std": 4.0,
+        "raw_wer_mean": 592.0,
+        "raw_wer_std": 4.0,
+        "raw_cer_mean": 575.3,
+        "raw_cer_std": 7.5699699104054705,
+        "n_test": 10,
+        "seeds": [
+          {
+            "top1_acc": 20.0,
+            "top3_acc": 30.0,
+            "constrained_wer": 80.0,
+            "raw_wer": 590.0,
+            "raw_cer": 568.0,
+            "n": 10
+          },
+          {
+            "top1_acc": 10.0,
+            "top3_acc": 40.0,
+            "constrained_wer": 90.0,
+            "raw_wer": 600.0,
+            "raw_cer": 576.1666666666666,
+            "n": 10
+          },
+          {
+            "top1_acc": 20.0,
+            "top3_acc": 40.0,
+            "constrained_wer": 80.0,
+            "raw_wer": 590.0,
+            "raw_cer": 572.0000000000001,
+            "n": 10
+          },
+          {
+            "top1_acc": 20.0,
+            "top3_acc": 30.0,
+            "constrained_wer": 80.0,
+            "raw_wer": 590.0,
+            "raw_cer": 589.5,
+            "n": 10
+          },
+          {
+            "top1_acc": 20.0,
+            "top3_acc": 40.0,
+            "constrained_wer": 80.0,
+            "raw_wer": 590.0,
+            "raw_cer": 570.8333333333334,
+            "n": 10
+          }
+        ]
+      },
+      {
+        "k": 3,
+        "top1_acc_mean": 14.0,
+        "top1_acc_std": 4.898979485566356,
+        "top3_acc_mean": 32.0,
+        "top3_acc_std": 7.483314773547883,
+        "constrained_wer_mean": 86.0,
+        "constrained_wer_std": 4.898979485566356,
+        "raw_wer_mean": 196.0,
+        "raw_wer_std": 55.71355310873648,
+        "raw_cer_mean": 195.8,
+        "raw_cer_std": 58.73985964497286,
+        "n_test": 10,
+        "seeds": [
+          {
+            "top1_acc": 20.0,
+            "top3_acc": 30.0,
+            "constrained_wer": 80.0,
+            "raw_wer": 280.0,
+            "raw_cer": 279.8333333333333,
+            "n": 10
+          },
+          {
+            "top1_acc": 10.0,
+            "top3_acc": 30.0,
+            "constrained_wer": 90.0,
+            "raw_wer": 140.0,
+            "raw_cer": 152.5,
+            "n": 10
+          },
+          {
+            "top1_acc": 10.0,
+            "top3_acc": 40.0,
+            "constrained_wer": 90.0,
+            "raw_wer": 180.0,
+            "raw_cer": 191.0,
+            "n": 10
+          },
+          {
+            "top1_acc": 10.0,
+            "top3_acc": 20.0,
+            "constrained_wer": 90.0,
+            "raw_wer": 140.0,
+            "raw_cer": 115.99999999999999,
+            "n": 10
+          },
+          {
+            "top1_acc": 20.0,
+            "top3_acc": 40.0,
+            "constrained_wer": 80.0,
+            "raw_wer": 240.0,
+            "raw_cer": 239.66666666666669,
+            "n": 10
+          }
+        ]
+      },
+      {
+        "k": 5,
+        "top1_acc_mean": 14.0,
+        "top1_acc_std": 4.898979485566356,
+        "top3_acc_mean": 36.0,
+        "top3_acc_std": 8.0,
+        "constrained_wer_mean": 86.0,
+        "constrained_wer_std": 4.898979485566356,
+        "raw_wer_mean": 88.0,
+        "raw_wer_std": 4.0,
+        "raw_cer_mean": 88.16666666666667,
+        "raw_cer_std": 4.8568393929477285,
+        "n_test": 10,
+        "seeds": [
+          {
+            "top1_acc": 20.0,
+            "top3_acc": 30.0,
+            "constrained_wer": 80.0,
+            "raw_wer": 90.0,
+            "raw_cer": 84.33333333333334,
+            "n": 10
+          },
+          {
+            "top1_acc": 10.0,
+            "top3_acc": 30.0,
+            "constrained_wer": 90.0,
+            "raw_wer": 90.0,
+            "raw_cer": 97.5,
+            "n": 10
+          },
+          {
+            "top1_acc": 10.0,
+            "top3_acc": 50.0,
+            "constrained_wer": 90.0,
+            "raw_wer": 90.0,
+            "raw_cer": 84.33333333333334,
+            "n": 10
+          },
+          {
+            "top1_acc": 20.0,
+            "top3_acc": 40.0,
+            "constrained_wer": 80.0,
+            "raw_wer": 80.0,
+            "raw_cer": 87.16666666666667,
+            "n": 10
+          },
+          {
+            "top1_acc": 10.0,
+            "top3_acc": 30.0,
+            "constrained_wer": 90.0,
+            "raw_wer": 90.0,
+            "raw_cer": 87.5,
+            "n": 10
+          }
+        ]
+      },
+      {
+        "k": 10,
+        "top1_acc_mean": 10.0,
+        "top1_acc_std": 6.324555320336759,
+        "top3_acc_mean": 38.0,
+        "top3_acc_std": 11.661903789690601,
+        "constrained_wer_mean": 90.0,
+        "constrained_wer_std": 6.324555320336759,
+        "raw_wer_mean": 90.0,
+        "raw_wer_std": 6.324555320336759,
+        "raw_cer_mean": 91.8,
+        "raw_cer_std": 9.81574698578202,
+        "n_test": 10,
+        "seeds": [
+          {
+            "top1_acc": 10.0,
+            "top3_acc": 50.0,
+            "constrained_wer": 90.0,
+            "raw_wer": 90.0,
+            "raw_cer": 84.33333333333334,
+            "n": 10
+          },
+          {
+            "top1_acc": 20.0,
+            "top3_acc": 50.0,
+            "constrained_wer": 80.0,
+            "raw_wer": 80.0,
+            "raw_cer": 84.66666666666667,
+            "n": 10
+          },
+          {
+            "top1_acc": 0.0,
+            "top3_acc": 40.0,
+            "constrained_wer": 100.0,
+            "raw_wer": 100.0,
+            "raw_cer": 110.5,
+            "n": 10
+          },
+          {
+            "top1_acc": 10.0,
+            "top3_acc": 30.0,
+            "constrained_wer": 90.0,
+            "raw_wer": 90.0,
+            "raw_cer": 92.66666666666666,
+            "n": 10
+          },
+          {
+            "top1_acc": 10.0,
+            "top3_acc": 20.0,
+            "constrained_wer": 90.0,
+            "raw_wer": 90.0,
+            "raw_cer": 86.83333333333334,
+            "n": 10
+          }
+        ]
+      },
+      {
+        "k": 20,
+        "top1_acc_mean": 6.0,
+        "top1_acc_std": 4.898979485566356,
+        "top3_acc_mean": 28.0,
+        "top3_acc_std": 4.0,
+        "constrained_wer_mean": 94.0,
+        "constrained_wer_std": 4.898979485566356,
+        "raw_wer_mean": 94.0,
+        "raw_wer_std": 4.898979485566356,
+        "raw_cer_mean": 95.33333333333331,
+        "raw_cer_std": 4.8989794855663495,
+        "n_test": 10,
+        "seeds": [
+          {
+            "top1_acc": 0.0,
+            "top3_acc": 20.0,
+            "constrained_wer": 100.0,
+            "raw_wer": 100.0,
+            "raw_cer": 101.33333333333331,
+            "n": 10
+          },
+          {
+            "top1_acc": 10.0,
+            "top3_acc": 30.0,
+            "constrained_wer": 90.0,
+            "raw_wer": 90.0,
+            "raw_cer": 91.33333333333333,
+            "n": 10
+          },
+          {
+            "top1_acc": 10.0,
+            "top3_acc": 30.0,
+            "constrained_wer": 90.0,
+            "raw_wer": 90.0,
+            "raw_cer": 91.33333333333333,
+            "n": 10
+          },
+          {
+            "top1_acc": 10.0,
+            "top3_acc": 30.0,
+            "constrained_wer": 90.0,
+            "raw_wer": 90.0,
+            "raw_cer": 91.33333333333333,
+            "n": 10
+          },
+          {
+            "top1_acc": 0.0,
+            "top3_acc": 30.0,
+            "constrained_wer": 100.0,
+            "raw_wer": 100.0,
+            "raw_cer": 101.33333333333331,
+            "n": 10
+          }
+        ]
       }
     ]
   },
   "F02": {
-    "adapter": [
-      {
-        "k": 0,
-        "wer": 600.0,
-        "cer": 567.6666666666666,
-        "n_query": 5
-      },
-      {
-        "k": 1,
-        "wer": 600.0,
-        "cer": 586.6666666666667,
-        "n_query": 5
-      },
-      {
-        "k": 3,
-        "wer": 120.0,
-        "cer": 125.0,
-        "n_query": 5
-      },
-      {
-        "k": 5,
-        "wer": 100.0,
-        "cer": 95.0,
-        "n_query": 5
-      },
-      {
-        "k": 10,
-        "wer": 100.0,
-        "cer": 90.0,
-        "n_query": 5
-      }
-    ],
     "full": [
       {
         "k": 0,
-        "wer": 600.0,
-        "cer": 567.6666666666666,
-        "n_query": 5
+        "top1_acc_mean": 10.0,
+        "top1_acc_std": 0.0,
+        "top3_acc_mean": 10.0,
+        "top3_acc_std": 0.0,
+        "constrained_wer_mean": 90.0,
+        "constrained_wer_std": 0.0,
+        "raw_wer_mean": 590.0,
+        "raw_wer_std": 0.0,
+        "raw_cer_mean": 578.3333333333334,
+        "raw_cer_std": 0.0,
+        "n_test": 10,
+        "seeds": [
+          {
+            "top1_acc": 10.0,
+            "top3_acc": 10.0,
+            "constrained_wer": 90.0,
+            "raw_wer": 590.0,
+            "raw_cer": 578.3333333333334,
+            "n": 10
+          }
+        ]
       },
       {
         "k": 1,
-        "wer": 300.0,
-        "cer": 282.99999999999994,
-        "n_query": 5
+        "top1_acc_mean": 10.0,
+        "top1_acc_std": 0.0,
+        "top3_acc_mean": 30.0,
+        "top3_acc_std": 0.0,
+        "constrained_wer_mean": 90.0,
+        "constrained_wer_std": 0.0,
+        "raw_wer_mean": 368.0,
+        "raw_wer_std": 58.787753826796276,
+        "raw_cer_mean": 377.4333333333333,
+        "raw_cer_std": 45.23857744103906,
+        "n_test": 10,
+        "seeds": [
+          {
+            "top1_acc": 10.0,
+            "top3_acc": 30.0,
+            "constrained_wer": 90.0,
+            "raw_wer": 380.0,
+            "raw_cer": 381.0,
+            "n": 10
+          },
+          {
+            "top1_acc": 10.0,
+            "top3_acc": 30.0,
+            "constrained_wer": 90.0,
+            "raw_wer": 390.0,
+            "raw_cer": 397.0,
+            "n": 10
+          },
+          {
+            "top1_acc": 10.0,
+            "top3_acc": 30.0,
+            "constrained_wer": 90.0,
+            "raw_wer": 350.0,
+            "raw_cer": 375.16666666666663,
+            "n": 10
+          },
+          {
+            "top1_acc": 10.0,
+            "top3_acc": 30.0,
+            "constrained_wer": 90.0,
+            "raw_wer": 270.0,
+            "raw_cer": 297.6666666666667,
+            "n": 10
+          },
+          {
+            "top1_acc": 10.0,
+            "top3_acc": 30.0,
+            "constrained_wer": 90.0,
+            "raw_wer": 450.0,
+            "raw_cer": 436.3333333333333,
+            "n": 10
+          }
+        ]
       },
       {
         "k": 3,
-        "wer": 120.0,
-        "cer": 106.99999999999999,
-        "n_query": 5
+        "top1_acc_mean": 8.0,
+        "top1_acc_std": 4.0,
+        "top3_acc_mean": 36.0,
+        "top3_acc_std": 12.0,
+        "constrained_wer_mean": 92.0,
+        "constrained_wer_std": 4.0,
+        "raw_wer_mean": 158.0,
+        "raw_wer_std": 64.31174076325411,
+        "raw_cer_mean": 187.03333333333336,
+        "raw_cer_std": 78.34350288597292,
+        "n_test": 10,
+        "seeds": [
+          {
+            "top1_acc": 10.0,
+            "top3_acc": 30.0,
+            "constrained_wer": 90.0,
+            "raw_wer": 240.0,
+            "raw_cer": 286.5,
+            "n": 10
+          },
+          {
+            "top1_acc": 10.0,
+            "top3_acc": 30.0,
+            "constrained_wer": 90.0,
+            "raw_wer": 130.0,
+            "raw_cer": 160.83333333333331,
+            "n": 10
+          },
+          {
+            "top1_acc": 0.0,
+            "top3_acc": 30.0,
+            "constrained_wer": 100.0,
+            "raw_wer": 100.0,
+            "raw_cer": 119.16666666666664,
+            "n": 10
+          },
+          {
+            "top1_acc": 10.0,
+            "top3_acc": 30.0,
+            "constrained_wer": 90.0,
+            "raw_wer": 90.0,
+            "raw_cer": 96.33333333333333,
+            "n": 10
+          },
+          {
+            "top1_acc": 10.0,
+            "top3_acc": 60.0,
+            "constrained_wer": 90.0,
+            "raw_wer": 229.99999999999997,
+            "raw_cer": 272.33333333333337,
+            "n": 10
+          }
+        ]
       },
       {
         "k": 5,
-        "wer": 100.0,
-        "cer": 81.0,
-        "n_query": 5
+        "top1_acc_mean": 6.0,
+        "top1_acc_std": 4.898979485566356,
+        "top3_acc_mean": 28.0,
+        "top3_acc_std": 4.0,
+        "constrained_wer_mean": 94.0,
+        "constrained_wer_std": 4.898979485566356,
+        "raw_wer_mean": 150.0,
+        "raw_wer_std": 63.56099432828282,
+        "raw_cer_mean": 171.46666666666664,
+        "raw_cer_std": 72.03867788286449,
+        "n_test": 10,
+        "seeds": [
+          {
+            "top1_acc": 10.0,
+            "top3_acc": 30.0,
+            "constrained_wer": 90.0,
+            "raw_wer": 200.0,
+            "raw_cer": 217.33333333333334,
+            "n": 10
+          },
+          {
+            "top1_acc": 10.0,
+            "top3_acc": 30.0,
+            "constrained_wer": 90.0,
+            "raw_wer": 110.00000000000001,
+            "raw_cer": 141.33333333333334,
+            "n": 10
+          },
+          {
+            "top1_acc": 10.0,
+            "top3_acc": 30.0,
+            "constrained_wer": 90.0,
+            "raw_wer": 90.0,
+            "raw_cer": 93.83333333333333,
+            "n": 10
+          },
+          {
+            "top1_acc": 0.0,
+            "top3_acc": 30.0,
+            "constrained_wer": 100.0,
+            "raw_wer": 100.0,
+            "raw_cer": 115.83333333333331,
+            "n": 10
+          },
+          {
+            "top1_acc": 0.0,
+            "top3_acc": 20.0,
+            "constrained_wer": 100.0,
+            "raw_wer": 250.0,
+            "raw_cer": 288.99999999999994,
+            "n": 10
+          }
+        ]
       },
       {
         "k": 10,
-        "wer": 100.0,
-        "cer": 86.0,
-        "n_query": 5
+        "top1_acc_mean": 4.0,
+        "top1_acc_std": 4.898979485566356,
+        "top3_acc_mean": 18.0,
+        "top3_acc_std": 7.483314773547883,
+        "constrained_wer_mean": 96.0,
+        "constrained_wer_std": 4.898979485566356,
+        "raw_wer_mean": 96.0,
+        "raw_wer_std": 4.898979485566356,
+        "raw_cer_mean": 102.36666666666665,
+        "raw_cer_std": 5.010433558530092,
+        "n_test": 10,
+        "seeds": [
+          {
+            "top1_acc": 10.0,
+            "top3_acc": 10.0,
+            "constrained_wer": 90.0,
+            "raw_wer": 90.0,
+            "raw_cer": 97.16666666666664,
+            "n": 10
+          },
+          {
+            "top1_acc": 10.0,
+            "top3_acc": 30.0,
+            "constrained_wer": 90.0,
+            "raw_wer": 90.0,
+            "raw_cer": 97.16666666666664,
+            "n": 10
+          },
+          {
+            "top1_acc": 0.0,
+            "top3_acc": 20.0,
+            "constrained_wer": 100.0,
+            "raw_wer": 100.0,
+            "raw_cer": 110.5,
+            "n": 10
+          },
+          {
+            "top1_acc": 0.0,
+            "top3_acc": 10.0,
+            "constrained_wer": 100.0,
+            "raw_wer": 100.0,
+            "raw_cer": 104.66666666666664,
+            "n": 10
+          },
+          {
+            "top1_acc": 0.0,
+            "top3_acc": 20.0,
+            "constrained_wer": 100.0,
+            "raw_wer": 100.0,
+            "raw_cer": 102.33333333333331,
+            "n": 10
+          }
+        ]
+      }
+    ],
+    "adapter": [
+      {
+        "k": 0,
+        "top1_acc_mean": 10.0,
+        "top1_acc_std": 0.0,
+        "top3_acc_mean": 10.0,
+        "top3_acc_std": 0.0,
+        "constrained_wer_mean": 90.0,
+        "constrained_wer_std": 0.0,
+        "raw_wer_mean": 590.0,
+        "raw_wer_std": 0.0,
+        "raw_cer_mean": 578.3333333333334,
+        "raw_cer_std": 0.0,
+        "n_test": 10,
+        "seeds": [
+          {
+            "top1_acc": 10.0,
+            "top3_acc": 10.0,
+            "constrained_wer": 90.0,
+            "raw_wer": 590.0,
+            "raw_cer": 578.3333333333334,
+            "n": 10
+          }
+        ]
+      },
+      {
+        "k": 1,
+        "top1_acc_mean": 10.0,
+        "top1_acc_std": 0.0,
+        "top3_acc_mean": 20.0,
+        "top3_acc_std": 0.0,
+        "constrained_wer_mean": 90.0,
+        "constrained_wer_std": 0.0,
+        "raw_wer_mean": 590.0,
+        "raw_wer_std": 0.0,
+        "raw_cer_mean": 597.9000000000001,
+        "raw_cer_std": 6.9702542596698,
+        "n_test": 10,
+        "seeds": [
+          {
+            "top1_acc": 10.0,
+            "top3_acc": 20.0,
+            "constrained_wer": 90.0,
+            "raw_wer": 590.0,
+            "raw_cer": 601.6666666666667,
+            "n": 10
+          },
+          {
+            "top1_acc": 10.0,
+            "top3_acc": 20.0,
+            "constrained_wer": 90.0,
+            "raw_wer": 590.0,
+            "raw_cer": 601.6666666666667,
+            "n": 10
+          },
+          {
+            "top1_acc": 10.0,
+            "top3_acc": 20.0,
+            "constrained_wer": 90.0,
+            "raw_wer": 590.0,
+            "raw_cer": 602.8333333333334,
+            "n": 10
+          },
+          {
+            "top1_acc": 10.0,
+            "top3_acc": 20.0,
+            "constrained_wer": 90.0,
+            "raw_wer": 590.0,
+            "raw_cer": 599.1666666666667,
+            "n": 10
+          },
+          {
+            "top1_acc": 10.0,
+            "top3_acc": 20.0,
+            "constrained_wer": 90.0,
+            "raw_wer": 590.0,
+            "raw_cer": 584.1666666666666,
+            "n": 10
+          }
+        ]
+      },
+      {
+        "k": 3,
+        "top1_acc_mean": 8.0,
+        "top1_acc_std": 7.483314773547883,
+        "top3_acc_mean": 22.0,
+        "top3_acc_std": 7.483314773547883,
+        "constrained_wer_mean": 92.0,
+        "constrained_wer_std": 7.483314773547883,
+        "raw_wer_mean": 230.0,
+        "raw_wer_std": 46.9041575982343,
+        "raw_cer_mean": 243.5333333333333,
+        "raw_cer_std": 41.69284510960283,
+        "n_test": 10,
+        "seeds": [
+          {
+            "top1_acc": 0.0,
+            "top3_acc": 20.0,
+            "constrained_wer": 100.0,
+            "raw_wer": 270.0,
+            "raw_cer": 296.8333333333333,
+            "n": 10
+          },
+          {
+            "top1_acc": 10.0,
+            "top3_acc": 20.0,
+            "constrained_wer": 90.0,
+            "raw_wer": 210.0,
+            "raw_cer": 210.66666666666666,
+            "n": 10
+          },
+          {
+            "top1_acc": 10.0,
+            "top3_acc": 30.0,
+            "constrained_wer": 90.0,
+            "raw_wer": 180.0,
+            "raw_cer": 223.16666666666669,
+            "n": 10
+          },
+          {
+            "top1_acc": 20.0,
+            "top3_acc": 30.0,
+            "constrained_wer": 80.0,
+            "raw_wer": 190.0,
+            "raw_cer": 196.83333333333331,
+            "n": 10
+          },
+          {
+            "top1_acc": 0.0,
+            "top3_acc": 10.0,
+            "constrained_wer": 100.0,
+            "raw_wer": 300.0,
+            "raw_cer": 290.16666666666663,
+            "n": 10
+          }
+        ]
+      },
+      {
+        "k": 5,
+        "top1_acc_mean": 12.0,
+        "top1_acc_std": 7.483314773547883,
+        "top3_acc_mean": 28.0,
+        "top3_acc_std": 4.0,
+        "constrained_wer_mean": 88.0,
+        "constrained_wer_std": 7.483314773547883,
+        "raw_wer_mean": 152.0,
+        "raw_wer_std": 64.9307323229917,
+        "raw_cer_mean": 153.66666666666666,
+        "raw_cer_std": 51.75691043501126,
+        "n_test": 10,
+        "seeds": [
+          {
+            "top1_acc": 10.0,
+            "top3_acc": 30.0,
+            "constrained_wer": 90.0,
+            "raw_wer": 220.00000000000003,
+            "raw_cer": 206.83333333333334,
+            "n": 10
+          },
+          {
+            "top1_acc": 20.0,
+            "top3_acc": 30.0,
+            "constrained_wer": 80.0,
+            "raw_wer": 80.0,
+            "raw_cer": 92.5,
+            "n": 10
+          },
+          {
+            "top1_acc": 20.0,
+            "top3_acc": 30.0,
+            "constrained_wer": 80.0,
+            "raw_wer": 80.0,
+            "raw_cer": 96.33333333333333,
+            "n": 10
+          },
+          {
+            "top1_acc": 10.0,
+            "top3_acc": 30.0,
+            "constrained_wer": 90.0,
+            "raw_wer": 150.0,
+            "raw_cer": 159.83333333333334,
+            "n": 10
+          },
+          {
+            "top1_acc": 0.0,
+            "top3_acc": 20.0,
+            "constrained_wer": 100.0,
+            "raw_wer": 229.99999999999997,
+            "raw_cer": 212.8333333333333,
+            "n": 10
+          }
+        ]
+      },
+      {
+        "k": 10,
+        "top1_acc_mean": 10.0,
+        "top1_acc_std": 0.0,
+        "top3_acc_mean": 40.0,
+        "top3_acc_std": 0.0,
+        "constrained_wer_mean": 90.0,
+        "constrained_wer_std": 0.0,
+        "raw_wer_mean": 90.0,
+        "raw_wer_std": 0.0,
+        "raw_cer_mean": 103.83333333333333,
+        "raw_cer_std": 0.0,
+        "n_test": 10,
+        "seeds": [
+          {
+            "top1_acc": 10.0,
+            "top3_acc": 40.0,
+            "constrained_wer": 90.0,
+            "raw_wer": 90.0,
+            "raw_cer": 103.83333333333333,
+            "n": 10
+          },
+          {
+            "top1_acc": 10.0,
+            "top3_acc": 40.0,
+            "constrained_wer": 90.0,
+            "raw_wer": 90.0,
+            "raw_cer": 103.83333333333333,
+            "n": 10
+          },
+          {
+            "top1_acc": 10.0,
+            "top3_acc": 40.0,
+            "constrained_wer": 90.0,
+            "raw_wer": 90.0,
+            "raw_cer": 103.83333333333333,
+            "n": 10
+          },
+          {
+            "top1_acc": 10.0,
+            "top3_acc": 40.0,
+            "constrained_wer": 90.0,
+            "raw_wer": 90.0,
+            "raw_cer": 103.83333333333333,
+            "n": 10
+          },
+          {
+            "top1_acc": 10.0,
+            "top3_acc": 40.0,
+            "constrained_wer": 90.0,
+            "raw_wer": 90.0,
+            "raw_cer": 103.83333333333333,
+            "n": 10
+          }
+        ]
       }
     ]
   }

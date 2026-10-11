@@ -1,1 +1,0 @@
- grid/ ua/ *.npy *.tgz *.pt .ipynb_checkpoints/

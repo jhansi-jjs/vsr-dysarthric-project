@@ -132,24 +132,45 @@ W_up:   64 → 512   (expand, initialized to zero)
 
 Only the adapter weights + CTC head are trained (~100K params). The 12.5M backbone stays frozen.
 
-### Data Efficiency Results (Speaker F05, Dysarthric)
+### Data Efficiency & Personalization Benchmark (5 Random Seeds, Mean ± Std)
 
-| k (examples) | Zero-Shot | Full Fine-Tune | Adapter |
-|:---:|:---:|:---:|:---:|
-| 0 | 590% WER | — | — |
-| 1 | — | 355% | 590% |
-| 3 | — | 140% | 280% |
-| **5** | — | **90%** | **105%** |
-| 10 | — | 95% | 95% |
-| 20 | — | 90% | 95% |
+> [!NOTE]
+> **Resolution of the 590% WER Artifact:**  
+> When evaluating isolated word clips (reference length = 1 word) using an unconstrained sentence CTC decoder, unadapted models emit standard 6-word sentence hypotheses. Under standard Levenshtein calculation ($\frac{S + D + I}{N_{\text{ref}}}$), 1 substitution plus 5 insertions produces an artificial $600\%$ WER.  
+> To address this, decoding is constrained to a single word for isolated-word clips via exact CTC closed-set sequence likelihood scoring. We report **Top-1 Word Accuracy**, **Top-3 Accuracy**, **Constrained WER** (bounded in $[0\%, 100\%]$), alongside raw sentence-level CTC WER across 5 independent random seeds ($s \in \{0, 1, 2, 3, 4\}$). Support and query splits are strictly disjoint recording blocks (Test: Block B3 for F05, Block B2 for F02) with zero data leakage.
+
+#### Speaker F05 — Mild Dysarthria (95% Intelligibility)
+*Held-out test set: Block B3 (10 clips, digits 0–9). Support candidate pool: Blocks B1 & B2 (20 clips).*
+
+| $k$ (shots) | Full Fine-Tune Top-1 Acc | Adapter Top-1 Acc | Full Constrained WER | Adapter Constrained WER | Full Top-3 Acc | Adapter Top-3 Acc | Raw Sentence CTC WER |
+|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
+| **0** *(Zero-Shot)* | 20.0% | 20.0% | 80.0% | 80.0% | 30.0% | 30.0% | 590.0% |
+| **1** | 12.0 ± 4.0% | 18.0 ± 4.0% | 88.0 ± 4.0% | 82.0 ± 4.0% | 32.0 ± 4.0% | 36.0 ± 4.9% | 326.0% (Full) / 592.0% (Adapt) |
+| **3** | 14.0 ± 8.0% | 14.0 ± 4.9% | 86.0 ± 8.0% | 86.0 ± 4.9% | 36.0 ± 10.2% | 32.0 ± 7.5% | 168.0% (Full) / 196.0% (Adapt) |
+| **5** | 8.0 ± 7.5% | 14.0 ± 4.9% | 92.0 ± 7.5% | 86.0 ± 4.9% | 30.0 ± 14.1% | 36.0 ± 8.0% | 92.0% (Full) / 88.0% (Adapt) |
+| **10** | 14.0 ± 12.0% | 10.0 ± 6.3% | 86.0 ± 12.0% | 90.0 ± 6.3% | 34.0 ± 8.0% | 38.0 ± 11.7% | 86.0% (Full) / 90.0% (Adapt) |
+| **20** | 8.0 ± 4.0% | 6.0 ± 4.9% | 92.0 ± 4.0% | 94.0 ± 4.9% | 26.0 ± 4.9% | 28.0 ± 4.0% | 92.0% (Full) / 94.0% (Adapt) |
+
+#### Speaker F02 — Severe Dysarthria (29% Intelligibility)
+*Held-out test set: Block B2 (10 clips, digits 0–9). Support candidate pool: Block B1 (10 clips).*
+
+| $k$ (shots) | Full Fine-Tune Top-1 Acc | Adapter Top-1 Acc | Full Constrained WER | Adapter Constrained WER | Full Top-3 Acc | Adapter Top-3 Acc | Raw Sentence CTC WER |
+|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
+| **0** *(Zero-Shot)* | 10.0% | 10.0% | 90.0% | 90.0% | 10.0% | 10.0% | 590.0% |
+| **1** | 10.0 ± 0.0% | 10.0 ± 0.0% | 90.0 ± 0.0% | 90.0 ± 0.0% | 30.0 ± 0.0% | 20.0 ± 0.0% | 368.0% (Full) / 590.0% (Adapt) |
+| **3** | 8.0 ± 4.0% | 8.0 ± 7.5% | 92.0 ± 4.0% | 92.0 ± 7.5% | 36.0 ± 12.0% | 22.0 ± 7.5% | 158.0% (Full) / 230.0% (Adapt) |
+| **5** | 6.0 ± 4.9% | 12.0 ± 7.5% | 94.0 ± 4.9% | 88.0 ± 7.5% | 28.0 ± 4.0% | 28.0 ± 4.0% | 150.0% (Full) / 152.0% (Adapt) |
+| **10** | 4.0 ± 4.9% | 10.0 ± 0.0% | 96.0 ± 4.9% | 90.0 ± 0.0% | 18.0 ± 7.5% | **40.0 ± 0.0%** | 96.0% (Full) / 90.0% (Adapt) |
 
 <p align="center">
-  <img src="fig_data_efficiency.png" alt="Data efficiency curve" width="600">
+  <img src="fig_data_efficiency.png" alt="Data efficiency curve" width="850">
   <br>
-  <em>WER drops sharply with just 5 adaptation examples</em>
+  <em>Top-1 Word Accuracy and Constrained WER across adaptation data budgets ($k$) over 5 random seeds (Mean ± Std).</em>
 </p>
 
-**Key finding:** Full fine-tuning reaches usable accuracy (~90% WER) with just **5 examples**. Adapter tuning catches up at k=10.
+**Key Insights:**
+1. **Isolated vs. Sentence Artifact**: The dramatic drop in raw sentence CTC WER from ~590% down to ~90% is predominantly the model learning to suppress extraneous sentence token insertions on isolated word clips.
+2. **Adapter vs. Full Fine-Tuning**: Full fine-tuning on tiny isolated word sets leads to severe over-fitting and catastrophic forgetting on other word classes. Adapter tuning freezes the 12.5M backbone, yielding higher stability, and pushes Top-3 accuracy on severe dysarthria (F02) from 10% up to 40%.
 
 ---
 
@@ -219,7 +240,7 @@ The pretrained `source_model.pt` (~50 MB) is excluded from Git due to size.
 
 ```bash
 conda activate dl-env
-cd C:\Users\jhans\VSR_project
+cd vsr-dysarthric-project
 python vsr_app.py
 ```
 
@@ -349,7 +370,7 @@ The original command-line demo is still available:
 
 ```bash
 conda activate dl-env
-cd C:\Users\jhans\VSR_project
+cd vsr-dysarthric-project
 python live_demo.py
 ```
 
@@ -362,10 +383,10 @@ Choose mode 1 (baseline) or mode 2 (personalization) and follow the terminal pro
 If you use this project in your research:
 
 ```bibtex
-@misc{vsr-dysarthric-2025,
+@misc{vsr-dysarthric-2026,
   title   = {Speaker-Adaptive Visual Speech Recognition: Few-Shot Personalization for Dysarthric Speakers},
   author  = {Jhansi Lakshmi Suggu},
-  year    = {2025},
+  year    = {2026},
   url     = {https://github.com/jhansi-jjs/vsr-dysarthric-project}
 }
 ```

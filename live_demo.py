@@ -17,7 +17,7 @@ Run from Anaconda Prompt with dl-env active, from your VSR_project
 folder (where source_model.pt lives):
 
     conda activate dl-env
-    cd C:\\Users\\jhans\\VSR_project
+    cd VSR_project
     python live_demo.py
 """
 
