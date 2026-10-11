@@ -133,15 +133,61 @@ def personalize(base_state, Xs, Ys, k, mode, vocab, blank, epochs=60, lr=1e-4):
 
 
 # ------------------------------------------------------------
-# Webcam capture -> stable mouth ROI (same technique as Steps 2 & 6)
+# Resampling, Face detection, Mouth crop & Debug strip
 # ------------------------------------------------------------
+def resample_to_25fps(raw_frames_with_ts, target_fps=25.0, total_frames=T_LEN):
+    """
+    Resample captured webcam frames with timestamps to exact 25.0 FPS grid (75 frames),
+    matching GRID corpus temporal spacing (40ms per frame).
+    """
+    if not raw_frames_with_ts:
+        return []
+    if isinstance(raw_frames_with_ts[0], (tuple, list)) and len(raw_frames_with_ts[0]) == 2:
+        times = [t for t, f in raw_frames_with_ts]
+        frames = [f for t, f in raw_frames_with_ts]
+        t_start = times[0]
+        target_times = [t_start + k * (1.0 / target_fps) for k in range(total_frames)]
+        resampled = []
+        for tt in target_times:
+            idx = min(range(len(times)), key=lambda i: abs(times[i] - tt))
+            resampled.append(frames[idx])
+        return resampled
+    else:
+        frames = raw_frames_with_ts
+        idx = np.linspace(0, len(frames) - 1, total_frames).round().astype(int)
+        return [frames[i] for i in idx]
+
+
+def save_debug_strip(clip, label="Live Clip (CLI)"):
+    debug_dir = os.path.join(ROOT, 'debug')
+    os.makedirs(debug_dir, exist_ok=True)
+    filename = f"debug_cli_{int(time.time())}.png"
+    filepath = os.path.join(debug_dir, filename)
+    rows = []
+    for r in range(5):
+        row_frames = [clip[r * 15 + c] for c in range(15)]
+        rows.append(np.hstack(row_frames))
+    grid_img = np.vstack(rows)
+    header = np.zeros((30, grid_img.shape[1]), dtype=np.uint8) + 245
+    header_bgr = cv2.cvtColor(header, cv2.COLOR_GRAY2BGR)
+    grid_bgr = cv2.cvtColor(grid_img, cv2.COLOR_GRAY2BGR)
+    info_text = (f"{label} | 75 frames @ 25 FPS (3.0s) | "
+                 f"Mean: {clip.mean():.1f} | Std: {clip.std():.1f}")
+    cv2.putText(header_bgr, info_text, (10, 20),
+                cv2.FONT_HERSHEY_SIMPLEX, 0.48, (0, 0, 0), 1, cv2.LINE_AA)
+    combined = np.vstack([header_bgr, grid_bgr])
+    cv2.imwrite(filepath, combined)
+    print(f"[Debug] Saved 75-frame debug strip to: {filepath}")
+    return filepath
+
+
 def record_and_crop(seconds=RECORD_SECONDS):
     cap = cv2.VideoCapture(0)
     if not cap.isOpened():
         print("ERROR: could not open webcam.")
         return None
 
-    frames = []
+    raw_buffer = []
     print(f"\nRecording in 2 seconds... get ready to speak silently.")
     t0 = time.time()
     while time.time() - t0 < 2:
@@ -152,11 +198,11 @@ def record_and_crop(seconds=RECORD_SECONDS):
             cv2.waitKey(1)
 
     print("RECORDING — speak now (silently)...")
-    t0 = time.time()
-    while time.time() - t0 < seconds:
+    t0 = time.perf_counter()
+    while time.perf_counter() - t0 < seconds:
         ok, fr = cap.read()
         if not ok: break
-        frames.append(fr)
+        raw_buffer.append((time.perf_counter(), fr))
         disp = fr.copy()
         cv2.putText(disp, "RECORDING...", (30, 50), cv2.FONT_HERSHEY_SIMPLEX, 1.2, (0, 255, 0), 3)
         cv2.imshow('Live VSR Demo', disp)
@@ -165,11 +211,14 @@ def record_and_crop(seconds=RECORD_SECONDS):
     cap.release()
     cv2.destroyAllWindows()
 
-    if len(frames) < 10:
+    if len(raw_buffer) < 10:
         print("Recording too short, try again.")
         return None
 
-    # one stable face box for the whole clip (identical logic to notebook Steps 2 & 6)
+    # Resample to exact 25.0 FPS (75 frames at 40ms interval) matching GRID corpus
+    frames = resample_to_25fps(raw_buffer, target_fps=25.0, total_frames=T_LEN)
+
+    # One stable face box for the whole clip (identical logic to notebook Steps 2 & 6)
     boxes = []
     for i in np.linspace(0, len(frames) - 1, 8).astype(int):
         det = CASCADE.detectMultiScale(cv2.cvtColor(frames[i], cv2.COLOR_BGR2GRAY), 1.1, 5)
@@ -189,9 +238,16 @@ def record_and_crop(seconds=RECORD_SECONDS):
     roi = [cv2.resize(cv2.cvtColor(f[y1:y2, x1:x2], cv2.COLOR_BGR2GRAY), (OUT_W, OUT_H)) for f in frames]
     roi = np.array(roi, dtype=np.uint8)
 
-    # resample to exactly 75 frames, same as GRID/UASpeech preprocessing
-    idx = np.linspace(0, len(roi) - 1, T_LEN).round().astype(int)
-    return roi[idx]
+    # Luminance & contrast distribution matching:
+    # Match GRID training stats (mean ~148.0, std ~27.0)
+    if roi.std() > 1.0:
+        cur_m = float(roi.mean())
+        cur_s = float(roi.std())
+        normalized = (roi.astype(np.float32) - cur_m) * (27.0 / max(cur_s, 1.0)) + 148.0
+        roi = np.clip(normalized, 0, 255).astype(np.uint8)
+
+    save_debug_strip(roi)
+    return roi
 
 
 def transcribe(clip, model, vocab, blank):

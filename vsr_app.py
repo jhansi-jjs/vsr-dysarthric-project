@@ -161,9 +161,64 @@ def transcribe(clip, model, vocab, blank):
 
 
 # ----------------------------------------------------------------
-# Face detection + mouth crop  (from live_demo.py record_and_crop)
+# Resampling, Face detection, Mouth crop & Debug strip
 # ----------------------------------------------------------------
-def crop_mouth(frames):
+def resample_to_25fps(raw_frames_with_ts, target_fps=25.0, total_frames=T_LEN):
+    """
+    Resample captured webcam frames with timestamps to exact 25.0 FPS grid (75 frames),
+    matching GRID corpus temporal spacing (40ms per frame).
+    """
+    if not raw_frames_with_ts:
+        return []
+    # If passed as a list of frames without timestamps, resample uniformly
+    if isinstance(raw_frames_with_ts[0], (tuple, list)) and len(raw_frames_with_ts[0]) == 2:
+        times = [t for t, f in raw_frames_with_ts]
+        frames = [f for t, f in raw_frames_with_ts]
+        t_start = times[0]
+        target_times = [t_start + k * (1.0 / target_fps) for k in range(total_frames)]
+        resampled = []
+        for tt in target_times:
+            idx = min(range(len(times)), key=lambda i: abs(times[i] - tt))
+            resampled.append(frames[idx])
+        return resampled
+    else:
+        frames = raw_frames_with_ts
+        idx = np.linspace(0, len(frames) - 1, total_frames).round().astype(int)
+        return [frames[i] for i in idx]
+
+
+def save_debug_strip(clip, label="Live Clip", filename=None):
+    """
+    Save the exact (75, 50, 100) tensor fed to the model as a 15x5 image strip
+    for direct visual comparison with GRID training clips.
+    """
+    debug_dir = os.path.join(ROOT, 'debug')
+    os.makedirs(debug_dir, exist_ok=True)
+    if filename is None:
+        filename = f"debug_live_{datetime.now().strftime('%Y%m%d_%H%M%S')}.png"
+    filepath = os.path.join(debug_dir, filename)
+
+    # 15 columns x 5 rows of 100x50 mouth crops = 1500 x 250 image
+    rows = []
+    for r in range(5):
+        row_frames = [clip[r * 15 + c] for c in range(15)]
+        rows.append(np.hstack(row_frames))
+    grid_img = np.vstack(rows)
+
+    # Header bar with metadata
+    header = np.zeros((30, grid_img.shape[1]), dtype=np.uint8) + 245
+    header_bgr = cv2.cvtColor(header, cv2.COLOR_GRAY2BGR)
+    grid_bgr = cv2.cvtColor(grid_img, cv2.COLOR_GRAY2BGR)
+    info_text = (f"{label} | 75 frames @ 25 FPS (3.0s) | Shape: {clip.shape} | "
+                 f"Mean: {clip.mean():.1f} | Std: {clip.std():.1f}")
+    cv2.putText(header_bgr, info_text, (10, 20),
+                cv2.FONT_HERSHEY_SIMPLEX, 0.48, (0, 0, 0), 1, cv2.LINE_AA)
+    combined = np.vstack([header_bgr, grid_bgr])
+    cv2.imwrite(filepath, combined)
+    return filepath
+
+
+def crop_mouth(frames, match_grid_stats=True):
     """
     Detect face, crop mouth ROI, resample to 75 frames.
     Returns (np.ndarray shape (75,50,100), None) on success,
@@ -172,7 +227,7 @@ def crop_mouth(frames):
     if len(frames) < 10:
         return None, "Recording too short — try again."
 
-    # One stable face box for the whole clip
+    # One stable face box for the whole clip (identical logic to notebook Step 2 & Step 6)
     boxes = []
     for i in np.linspace(0, len(frames) - 1, 8).astype(int):
         det = CASCADE.detectMultiScale(
@@ -194,9 +249,21 @@ def crop_mouth(frames):
                       (OUT_W, OUT_H)) for f in frames]
     roi = np.array(roi, dtype=np.uint8)
 
-    # Resample to exactly 75 frames
-    idx = np.linspace(0, len(roi) - 1, T_LEN).round().astype(int)
-    return roi[idx], None
+    # Resample to exactly 75 frames if not already 75
+    if len(roi) != T_LEN:
+        idx = np.linspace(0, len(roi) - 1, T_LEN).round().astype(int)
+        roi = roi[idx]
+
+    # Luminance & contrast distribution matching:
+    # GRID training distribution has mean ~148.0, std ~27.0
+    # Normalizes uncalibrated webcam lighting to match training domain without altering weights
+    if match_grid_stats and roi.std() > 1.0:
+        cur_m = float(roi.mean())
+        cur_s = float(roi.std())
+        normalized = (roi.astype(np.float32) - cur_m) * (27.0 / max(cur_s, 1.0)) + 148.0
+        roi = np.clip(normalized, 0, 255).astype(np.uint8)
+
+    return roi, None
 
 
 # ----------------------------------------------------------------
@@ -272,14 +339,15 @@ class VSRApp(tk.Tk):
             self.destroy()
             return
 
-        # Recording state — all reads happen in the main-thread after() loop
+        # Recording state — capture runs at full camera frame rate
         self._running = True
         self._in_countdown = False
         self._recording = False
         self._countdown_start = 0.0
         self._record_start = 0.0
-        self._recorded_frames = []
+        self._latest_preview_frame = None
         self._record_callback = None   # called when recording finishes
+        self.save_debug_var = tk.BooleanVar(value=True)  # debug strip saving enabled
 
         # ---- Build UI ----
         self._build_ui()
@@ -337,10 +405,17 @@ class VSRApp(tk.Tk):
         self._build_personalization_tab()
 
         # ---- Footer ----
+        footer_frame = ttk.Frame(self)
+        footer_frame.pack(fill='x', padx=10, pady=(2, 6))
+
         dev_text = (f"Device: {device}  │  Vocab: {self.V} words  │  "
-                    f"Log: demo_log.json")
-        ttk.Label(self, text=dev_text, font=('Segoe UI', 8),
-                  foreground='gray').pack(pady=(2, 8))
+                    f"25 FPS resampled  │  Log: demo_log.json")
+        ttk.Label(footer_frame, text=dev_text, font=('Segoe UI', 8),
+                  foreground='gray').pack(side='left', padx=4)
+
+        ttk.Checkbutton(
+            footer_frame, text="📸 Save 75-frame debug strip to debug/",
+            variable=self.save_debug_var).pack(side='right', padx=4)
 
     # ---- Tab 1: Baseline ----
     def _build_baseline_tab(self):
@@ -627,36 +702,35 @@ class VSRApp(tk.Tk):
         if not self._running:
             return
 
-        ok, frame = self.cap.read()
-        if not ok:
-            self.after(33, self._update_preview)
-            return
-
-        # ---- Handle countdown / recording state transitions ----
         now = time.time()
 
+        if self._recording:
+            # During recording, the background thread captures frames from self.cap
+            # at native camera FPS to prevent UI dropped frames.
+            frame = self._latest_preview_frame
+            if frame is None:
+                self.after(20, self._update_preview)
+                return
+        else:
+            ok, frame = self.cap.read()
+            if not ok:
+                self.after(33, self._update_preview)
+                return
+            self._latest_preview_frame = frame
+
+        # ---- Handle countdown state transitions ----
         if self._in_countdown:
             elapsed = now - self._countdown_start
             if elapsed >= COUNTDOWN_SECONDS:
-                # Countdown done → start recording
+                # Countdown done → start recording via dedicated worker thread
                 self._in_countdown = False
                 self._recording = True
-                self._record_start = now
-                self._recorded_frames = []
-
-        if self._recording:
-            self._recorded_frames.append(frame.copy())
-            elapsed = now - self._record_start
-            if elapsed >= RECORD_SECONDS:
-                # Recording done → process in worker thread
-                self._recording = False
-                frames = list(self._recorded_frames)
-                self._recorded_frames = []
+                self._record_start = time.perf_counter()
                 cb = self._record_callback
                 self._record_callback = None
                 threading.Thread(
-                    target=self._process_recording,
-                    args=(frames, cb), daemon=True).start()
+                    target=self._record_capture_worker,
+                    args=(cb,), daemon=True).start()
 
         # ---- Draw overlay text ----
         disp = frame.copy()
@@ -666,7 +740,7 @@ class VSRApp(tk.Tk):
                         (30, 50), cv2.FONT_HERSHEY_SIMPLEX,
                         1.2, (0, 0, 255), 3)
         elif self._recording:
-            remaining = max(0, RECORD_SECONDS - (now - self._record_start))
+            remaining = max(0.0, RECORD_SECONDS - (time.perf_counter() - self._record_start))
             cv2.putText(disp, f"RECORDING... {remaining:.1f}s",
                         (30, 50), cv2.FONT_HERSHEY_SIMPLEX,
                         1.2, (0, 255, 0), 3)
@@ -695,13 +769,50 @@ class VSRApp(tk.Tk):
     def _start_recording(self, callback):
         """Begin a countdown → record cycle.  callback(clip, err) is
         called on the main thread when done."""
+        if self._in_countdown or self._recording:
+            return
         self._record_callback = callback
         self._in_countdown = True
         self._countdown_start = time.time()
 
-    def _process_recording(self, frames, callback):
-        """Worker thread: crop mouth region from recorded frames."""
-        clip, err = crop_mouth(frames)
+    def _record_capture_worker(self, callback):
+        """
+        Dedicated capture thread: reads camera at native hardware frame rate
+        (typically 30 FPS) with high-resolution timestamps.
+        """
+        raw_buffer = []
+        t0 = time.perf_counter()
+        while (time.perf_counter() - t0 < RECORD_SECONDS) and self._running:
+            ok, frame = self.cap.read()
+            if ok:
+                ts = time.perf_counter()
+                raw_buffer.append((ts, frame))
+                self._latest_preview_frame = frame
+            else:
+                time.sleep(0.005)
+
+        self._recording = False
+        self._process_recording(raw_buffer, callback)
+
+    def _process_recording(self, raw_buffer, callback):
+        """Worker thread: resample to 25.0 FPS, crop mouth ROI, match GRID lighting stats."""
+        if not raw_buffer:
+            if callback:
+                self.after(0, lambda: callback(None, "No frames captured from camera."))
+            return
+
+        # Resample to 25.0 FPS (75 frames at 40ms intervals) matching GRID training
+        resampled_frames = resample_to_25fps(raw_buffer, target_fps=25.0, total_frames=T_LEN)
+        clip, err = crop_mouth(resampled_frames, match_grid_stats=True)
+
+        # Optional debug strip output
+        if clip is not None and self.save_debug_var.get():
+            try:
+                strip_path = save_debug_strip(clip, label="Live Webcam Clip")
+                print(f"[Debug] Saved 75-frame debug strip to: {strip_path}")
+            except Exception as e:
+                print(f"[Debug] Error saving debug strip: {e}")
+
         if callback:
             self.after(0, lambda: callback(clip, err))
 
