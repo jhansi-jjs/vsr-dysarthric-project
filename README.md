@@ -43,15 +43,25 @@ A **desktop GUI application** (`vsr_app.py`) lets you run the entire system live
 │  └──────────┘    └───────────────────┘    └──────────────────────┘   │
 └──────────────────────────────────────────────────────────────────────┘
 
-┌──────────────────────────────────────────────────────────────────────┐
-│                       INFERENCE PIPELINE                             │
-│                                                                      │
-│  ┌──────────┐    ┌───────────────┐    ┌────────┐    ┌────────────┐  │
-│  │ Webcam   │───▶│ Face Detect + │───▶│ LipNet │───▶│ CTC Decode │  │
-│  │ 3s clip  │    │ Mouth Crop    │    │ Forward│    │ + Grammar  │  │
-│  │ 640×480  │    │ 75×50×100     │    │ Pass   │    │ Constraint │  │
-│  └──────────┘    └───────────────┘    └────────┘    └────────────┘  │
-└──────────────────────────────────────────────────────────────────────┘
+┌────────────────────────────────────────────────────────────────────────┐
+│                       INFERENCE PIPELINE                               │
+│                                                                        │
+│  ┌──────────┐    ┌────────────────────┐    ┌────────────────────────┐  │
+│  │ Webcam   │───▶│ Resample to 25 FPS │───▶│ Face Detect + Mouth    │  │
+│  │ ~30 FPS  │    │ 75 frames @ 40ms   │    │ ROI + Luminance Norm   │  │
+│  │ capture  │    │ (GRID temporal)    │    │ (50×100, μ≈148, σ≈27)  │  │
+│  └──────────┘    └────────────────────┘    └───────────┬────────────┘  │
+│                                                        │               │
+│  ┌────────────────────────┐    ┌───────────────────────▼────────────┐  │
+│  │ AAC Custom Phrase Match│◀───│ LipNet Forward Pass (3D-CNN+BiGRU) │  │
+│  │ Prototypes + Ridge Head│    │ 12.5M params (source_model.pt)     │  │
+│  └────────────────────────┘    └───────────┬────────────────────────┘  │
+│                                            │                           │
+│                                ┌───────────▼────────────────────────┐  │
+│                                │ CTC Decode + Grammar Constraint    │  │
+│                                │ (6-slot GRID slot snapping)        │  │
+│                                └────────────────────────────────────┘  │
+└────────────────────────────────────────────────────────────────────────┘
 ```
 
 ---
@@ -150,11 +160,15 @@ VSR_project/
 ├── README.md                         ← this file
 ├── VSR_Complete_Project_LOCAL.ipynb   ← full training notebook (Steps 0–9)
 ├── live_demo.py                      ← CLI-based webcam demo (baseline + personalize)
-├── vsr_app.py                        ← 🖥️  Desktop GUI application (Tkinter)
+├── vsr_app.py                        ← 🖥️  Desktop GUI application (3 tabs: Baseline, AAC Phrases, Few-Shot)
 ├── phrase_classifier.py             ← 💬 AAC-style personalized phrase classification
-├── grammar_decoder.py                ← GRID grammar-constrained post-processing
+├── grammar_constrain.py              ← GRID slot-constrained post-processing (snaps to nearest valid slot word)
+├── grammar_decoder.py                ← GRID grammar-constrained post-processing module
 ├── results.json                      ← k-sweep experiment results
 ├── fig_data_efficiency.png           ← data efficiency plot
+├── demo_log.json                     ← real-time inference and evaluation log
+├── debug/
+│   └── debug_grid_reference.png      ← reference 75-frame tensor strip from GRID ground truth
 ├── .gitignore                        ← excludes large data/model files
 │
 ├── source_model.pt          (git-ignored, ~50 MB)  ← pretrained LipNet checkpoint
@@ -191,7 +205,7 @@ cd vsr-dysarthric-project
 conda create -n dl-env python=3.11 -y
 conda activate dl-env
 pip install torch torchvision --index-url https://download.pytorch.org/whl/cu121
-pip install opencv-python numpy pillow
+pip install opencv-python numpy pillow scikit-learn
 ```
 
 ### 3. Obtain the Model
@@ -209,35 +223,66 @@ cd C:\Users\jhans\VSR_project
 python vsr_app.py
 ```
 
-The GUI opens with two tabs:
+The GUI opens with three specialized tabs:
 
-| Tab | What it does |
-|-----|-------------|
-| **▶ Baseline Transcription** | Record a 3-second clip → get the model's prediction |
-| **🔧 Personalization** | Record labeled examples → fine-tune → compare before/after |
+| Tab | Name | Purpose |
+|:---:|:---|:---|
+| **1** | **▶ Baseline Transcription** | Record a 3-second clip → live LipNet forward pass → raw CTC + grammar-snapped prediction. |
+| **2** | **💬 Personalized Phrases (AAC)** | Enroll custom sentences (e.g., *"I need water"*), record 3–5 examples, and recognize via few-shot BiGRU representations + Ridge classifier. |
+| **3** | **🔧 Personalization (Few-Shot)** | Record single-word GRID training examples → adapter fine-tuning (15 epochs, frozen backbone) → Before vs After comparison. |
 
 ---
 
 ## 🖥️ Desktop App Features
 
-### Baseline Transcription Tab
-1. Click **Record & Transcribe**
-2. A 2-second countdown appears → then 3 seconds of recording
-3. The model runs a **real forward pass** on your mouth video
-4. Both the raw CTC output and grammar-corrected prediction are displayed
+### Tab 1: Baseline Transcription
+1. Click **🎥 Record & Transcribe**
+2. A 2-second countdown appears, followed by 3 seconds of recording at hardware frame rate.
+3. The model runs a **real forward pass** on your mouth video.
+4. Displays both:
+   - **Raw CTC**: raw sequence decoded directly from LipNet.
+   - **Grammar**: output snapped to valid GRID sentence slots using [grammar_constrain.py](file:///c:/Users/jhans/VSR_project/grammar_constrain.py).
 
-### Personalization Tab
-1. Select a word from the dropdown (51 GRID vocab words)
-2. Click **Record Training Example** — speak the word silently
-3. Repeat for 5–10 examples
-4. Click **Personalize (Fine-Tune)** — watch the progress bar: "epoch 23/60"
-5. Click **Record & Compare** — see predictions Before vs After personalization
-6. Click **Save Personalized Model** to keep a good checkpoint
+### Tab 2: Personalized Phrases (AAC Mode)
+Designed for assistive communication (AAC) where speakers have idiosyncratic lip movements:
+1. **Enroll Phrases**: Add natural phrases (default: *"I need water"*, *"Call my mother"*, *"I am in pain"*).
+2. **Record Examples**: Record 3–5 training clips per enrolled phrase.
+3. **Build Recognizer**: Automatically constructs a 2-layer classifier:
+   - *Layer 1*: Spatio-temporal LipNet encoder representations with cosine prototype matching.
+   - *Layer 2*: L2-regularized linear classification on temporal BiGRU features.
+4. **Recognize**: Record a live phrase and view ranked Top-3 matches with confidence scores.
+
+### Tab 3: Few-Shot Personalization
+1. Select target words from the 51-word GRID vocabulary.
+2. Record 5–10 training examples. Includes diversity validation to prevent overfitting to a single repeated word.
+3. Click **Personalize (Fine-Tune)**:
+   - Uses `PersonalizedLipNet` adapter tuning (freezes the 12.5M backbone, updates only adapter bottleneck + head for 15 epochs).
+   - Prevents catastrophic forgetting so the model retains general recognition capability.
+4. Click **Record & Compare** to observe performance Before vs After adaptation.
+5. Click **💾 Save Personalized Model** to export the fine-tuned checkpoint.
+
+---
+
+## 🔬 Live Webcam Pipeline Matching & Verification
+
+Pretrained LipNet models frequently fail on live webcams due to training-vs-inference domain mismatches. This project fixes these gaps without changing model weights:
+
+1. **Hardware-Decoupled Temporal Resampling (25.0 FPS)**:
+   - Tkinter GUI rendering often throttles camera loops down to ~17 FPS, stretching speech and introducing duplicate frames that freeze 3D-CNN temporal kernels.
+   - Capture runs in a dedicated background worker recording exact high-precision timestamps (`time.perf_counter()`), resampled to the 25.0 FPS GRID time grid (40ms spacing, 75 frames).
+2. **Statistical Luminance Distribution Matching**:
+   - GRID videos were recorded in bright lab conditions (mean intensity $\approx 148.8$, std $\approx 27.1$). Indoor webcams are much dimmer (mean $\approx 55–65$, std $\approx 15–20$).
+   - Because LipNet uses `div_(255.)` without instance normalization, dark inputs push activations into the dead zero zone of `ReLU` following frozen `BatchNorm3d` layers.
+   - The preprocessing pipeline normalizes live mouth crops to match GRID lighting stats:
+     $$\text{ROI}_{\text{norm}} = (\text{ROI} - \mu_{\text{live}}) \times \frac{27.0}{\max(\sigma_{\text{live}}, 1.0)} + 148.0$$
+3. **75-Frame Visual Debugger**:
+   - The checkbox `📸 Save 75-frame debug strip to debug/` exports a $15 \times 5$ montage of the exact tensor fed into LipNet.
+   - Compare live strips directly against [debug/debug_grid_reference.png](file:///c:/Users/jhans/VSR_project/debug/debug_grid_reference.png) to verify crop alignment, tightness, and illumination.
 
 ### Safety & Logging
-- **No faked predictions** — every transcription is a live model forward pass
-- **demo_log.json** — all predictions logged with timestamps for evaluation evidence
-- **Error handling** — clear messages for face detection failures, camera issues
+- **No faked predictions** — every prediction is a genuine model forward pass.
+- **demo_log.json** — all inferences, modes, timestamps, and predictions are logged for auditability.
+- **Error handling** — real-time feedback for face detection misses, inadequate lighting, or insufficient motion.
 
 ---
 
