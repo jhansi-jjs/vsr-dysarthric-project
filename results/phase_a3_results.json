@@ -1,0 +1,408 @@
+{
+  "metadata": {
+    "timestamp": "2026-10-21T00:55:50Z",
+    "git_commit": "0a609c66b1a7feb742db5fe5c234dec6c9a4b5c0",
+    "device": "cuda",
+    "gpu_name": "NVIDIA GeForce RTX 4050 Laptop GPU",
+    "phase": "Phase A3: Separate Camera/Domain Gap and Validate on Typical Speech"
+  },
+  "crop_qa": {
+    "grid_s8": {
+      "n_sampled": 10,
+      "detection_success_rate": 100.0,
+      "mean_face_width": 137.2,
+      "mean_face_height": 137.2,
+      "saved_strips": 10
+    },
+    "uaspeech_f05": {
+      "n_sampled": 12,
+      "detection_success_rate": 83.33333333333334,
+      "mean_face_width": 196.2,
+      "mean_face_height": 196.2,
+      "saved_strips": 10
+    },
+    "uaspeech_f02": {
+      "n_sampled": 11,
+      "detection_success_rate": 90.9090909090909,
+      "mean_face_width": 180.1,
+      "mean_face_height": 180.1,
+      "saved_strips": 10
+    },
+    "live_webcam": {
+      "detection_success": false,
+      "face_box": null,
+      "saved_strips": 1
+    }
+  },
+  "uaspeech_control_speaker_status": {
+    "available": false,
+    "explanation": "Checked all available UASpeech archives (UASpeech_F02.tgz, UASpeech_F05.tgz, and UASpeech_video_0.tgz). The archives contain only dysarthric speakers: F02, F04, F05, M05, M07, M08, M09. UASpeech control speakers (CF01-CF05, CM01-CM08) are not present in the local distributions. Hence, typical-speech control evaluation is conducted on held-out typical GRID speaker s8."
+  },
+  "temporal_scale_experiment": {
+    "resample_75": {
+      "top1_k": 31,
+      "top1_n": 95,
+      "top1_stat": "31/95 (32.6%, 95% CI: [23.4%, 43.0%])",
+      "top3_k": 79,
+      "top3_n": 95,
+      "top3_acc": 83.15789473684211,
+      "top3_ci": [
+        74.0951805507724,
+        90.0556251641257
+      ]
+    },
+    "native_pad_75": {
+      "top1_k": 16,
+      "top1_n": 95,
+      "top1_stat": "16/95 (16.8%, 95% CI: [9.9%, 25.9%])",
+      "top3_k": 23,
+      "top3_n": 95,
+      "top3_acc": 24.210526315789473,
+      "top3_ci": [
+        16.008120552302735,
+        34.08060556890039
+      ]
+    },
+    "resample_15_pad_75": {
+      "top1_k": 24,
+      "top1_n": 95,
+      "top1_stat": "24/95 (25.3%, 95% CI: [16.9%, 35.2%])",
+      "top3_k": 31,
+      "top3_n": 95,
+      "top3_acc": 32.631578947368425,
+      "top3_ci": [
+        23.361502092382594,
+        43.01816157903861
+      ]
+    },
+    "resample_25_pad_75": {
+      "top1_k": 24,
+      "top1_n": 95,
+      "top1_stat": "24/95 (25.3%, 95% CI: [16.9%, 35.2%])",
+      "top3_k": 42,
+      "top3_n": 95,
+      "top3_acc": 44.21052631578947,
+      "top3_ci": [
+        34.02392084927156,
+        54.7679836724821
+      ]
+    },
+    "resample_40_pad_75": {
+      "top1_k": 9,
+      "top1_n": 95,
+      "top1_stat": "9/95 (9.5%, 95% CI: [4.4%, 17.2%])",
+      "top3_k": 42,
+      "top3_n": 95,
+      "top3_acc": 44.21052631578947,
+      "top3_ci": [
+        34.02392084927156,
+        54.7679836724821
+      ]
+    },
+    "best_scheme": "resample_75"
+  },
+  "positive_controls_s8": {
+    "k_1": {
+      "prototype": {
+        "top1_k": 41,
+        "top1_n": 95,
+        "top1_stat": "41/95 (43.2%, 95% CI: [33.0%, 53.7%])",
+        "top3_k": 72
+      },
+      "adapter": {
+        "top1_k": 40,
+        "top1_n": 95,
+        "top1_stat": "40/95 (42.1%, 95% CI: [32.0%, 52.7%])",
+        "top3_k": 81
+      },
+      "full_ft": {
+        "top1_k": 54,
+        "top1_n": 95,
+        "top1_stat": "54/95 (56.8%, 95% CI: [46.3%, 67.0%])",
+        "top3_k": 81
+      }
+    },
+    "k_2": {
+      "prototype": {
+        "top1_k": 63,
+        "top1_n": 95,
+        "top1_stat": "63/95 (66.3%, 95% CI: [55.9%, 75.7%])",
+        "top3_k": 86
+      },
+      "adapter": {
+        "top1_k": 42,
+        "top1_n": 95,
+        "top1_stat": "42/95 (44.2%, 95% CI: [34.0%, 54.8%])",
+        "top3_k": 81
+      },
+      "full_ft": {
+        "top1_k": 65,
+        "top1_n": 95,
+        "top1_stat": "65/95 (68.4%, 95% CI: [58.1%, 77.6%])",
+        "top3_k": 92
+      }
+    },
+    "k_3": {
+      "prototype": {
+        "top1_k": 75,
+        "top1_n": 95,
+        "top1_stat": "75/95 (78.9%, 95% CI: [69.4%, 86.6%])",
+        "top3_k": 91
+      },
+      "adapter": {
+        "top1_k": 51,
+        "top1_n": 95,
+        "top1_stat": "51/95 (53.7%, 95% CI: [43.2%, 64.0%])",
+        "top3_k": 86
+      },
+      "full_ft": {
+        "top1_k": 73,
+        "top1_n": 95,
+        "top1_stat": "73/95 (76.8%, 95% CI: [67.1%, 84.9%])",
+        "top3_k": 92
+      }
+    },
+    "k_5": {
+      "prototype": {
+        "top1_k": 70,
+        "top1_n": 95,
+        "top1_stat": "70/95 (73.7%, 95% CI: [63.6%, 82.2%])",
+        "top3_k": 91
+      },
+      "adapter": {
+        "top1_k": 63,
+        "top1_n": 95,
+        "top1_stat": "63/95 (66.3%, 95% CI: [55.9%, 75.7%])",
+        "top3_k": 92
+      },
+      "full_ft": {
+        "top1_k": 75,
+        "top1_n": 95,
+        "top1_stat": "75/95 (78.9%, 95% CI: [69.4%, 86.6%])",
+        "top3_k": 92
+      }
+    }
+  },
+  "f02_per_clip_inspection": [
+    {
+      "fold": 0,
+      "test_block": "B1",
+      "target_word": "three",
+      "proto_pred": "five",
+      "proto_top1": false,
+      "proto_top3": true,
+      "adapt_pred": "nine",
+      "adapt_top1": false,
+      "adapt_top3": false
+    },
+    {
+      "fold": 0,
+      "test_block": "B1",
+      "target_word": "nine",
+      "proto_pred": "nine",
+      "proto_top1": true,
+      "proto_top3": true,
+      "adapt_pred": "nine",
+      "adapt_top1": true,
+      "adapt_top3": true
+    },
+    {
+      "fold": 0,
+      "test_block": "B1",
+      "target_word": "zero",
+      "proto_pred": "nine",
+      "proto_top1": false,
+      "proto_top3": false,
+      "adapt_pred": "two",
+      "adapt_top1": false,
+      "adapt_top3": false
+    },
+    {
+      "fold": 0,
+      "test_block": "B1",
+      "target_word": "six",
+      "proto_pred": "nine",
+      "proto_top1": false,
+      "proto_top3": true,
+      "adapt_pred": "two",
+      "adapt_top1": false,
+      "adapt_top3": false
+    },
+    {
+      "fold": 0,
+      "test_block": "B1",
+      "target_word": "seven",
+      "proto_pred": "nine",
+      "proto_top1": false,
+      "proto_top3": false,
+      "adapt_pred": "nine",
+      "adapt_top1": false,
+      "adapt_top3": false
+    },
+    {
+      "fold": 0,
+      "test_block": "B1",
+      "target_word": "eight",
+      "proto_pred": "eight",
+      "proto_top1": true,
+      "proto_top3": true,
+      "adapt_pred": "eight",
+      "adapt_top1": true,
+      "adapt_top3": true
+    },
+    {
+      "fold": 0,
+      "test_block": "B1",
+      "target_word": "four",
+      "proto_pred": "five",
+      "proto_top1": false,
+      "proto_top3": false,
+      "adapt_pred": "three",
+      "adapt_top1": false,
+      "adapt_top3": false
+    },
+    {
+      "fold": 0,
+      "test_block": "B1",
+      "target_word": "five",
+      "proto_pred": "six",
+      "proto_top1": false,
+      "proto_top3": true,
+      "adapt_pred": "one",
+      "adapt_top1": false,
+      "adapt_top3": false
+    },
+    {
+      "fold": 0,
+      "test_block": "B1",
+      "target_word": "one",
+      "proto_pred": "nine",
+      "proto_top1": false,
+      "proto_top3": false,
+      "adapt_pred": "nine",
+      "adapt_top1": false,
+      "adapt_top3": true
+    },
+    {
+      "fold": 0,
+      "test_block": "B1",
+      "target_word": "two",
+      "proto_pred": "nine",
+      "proto_top1": false,
+      "proto_top3": false,
+      "adapt_pred": "two",
+      "adapt_top1": true,
+      "adapt_top3": true
+    },
+    {
+      "fold": 1,
+      "test_block": "B2",
+      "target_word": "three",
+      "proto_pred": "eight",
+      "proto_top1": false,
+      "proto_top3": true,
+      "adapt_pred": "five",
+      "adapt_top1": false,
+      "adapt_top3": true
+    },
+    {
+      "fold": 1,
+      "test_block": "B2",
+      "target_word": "nine",
+      "proto_pred": "nine",
+      "proto_top1": true,
+      "proto_top3": true,
+      "adapt_pred": "six",
+      "adapt_top1": false,
+      "adapt_top3": true
+    },
+    {
+      "fold": 1,
+      "test_block": "B2",
+      "target_word": "zero",
+      "proto_pred": "three",
+      "proto_top1": false,
+      "proto_top3": false,
+      "adapt_pred": "eight",
+      "adapt_top1": false,
+      "adapt_top3": false
+    },
+    {
+      "fold": 1,
+      "test_block": "B2",
+      "target_word": "six",
+      "proto_pred": "nine",
+      "proto_top1": false,
+      "proto_top3": false,
+      "adapt_pred": "one",
+      "adapt_top1": false,
+      "adapt_top3": false
+    },
+    {
+      "fold": 1,
+      "test_block": "B2",
+      "target_word": "seven",
+      "proto_pred": "eight",
+      "proto_top1": false,
+      "proto_top3": false,
+      "adapt_pred": "eight",
+      "adapt_top1": false,
+      "adapt_top3": true
+    },
+    {
+      "fold": 1,
+      "test_block": "B2",
+      "target_word": "eight",
+      "proto_pred": "eight",
+      "proto_top1": true,
+      "proto_top3": true,
+      "adapt_pred": "zero",
+      "adapt_top1": false,
+      "adapt_top3": false
+    },
+    {
+      "fold": 1,
+      "test_block": "B2",
+      "target_word": "four",
+      "proto_pred": "eight",
+      "proto_top1": false,
+      "proto_top3": true,
+      "adapt_pred": "eight",
+      "adapt_top1": false,
+      "adapt_top3": false
+    },
+    {
+      "fold": 1,
+      "test_block": "B2",
+      "target_word": "five",
+      "proto_pred": "four",
+      "proto_top1": false,
+      "proto_top3": false,
+      "adapt_pred": "five",
+      "adapt_top1": true,
+      "adapt_top3": true
+    },
+    {
+      "fold": 1,
+      "test_block": "B2",
+      "target_word": "one",
+      "proto_pred": "eight",
+      "proto_top1": false,
+      "proto_top3": false,
+      "adapt_pred": "eight",
+      "adapt_top1": false,
+      "adapt_top3": false
+    },
+    {
+      "fold": 1,
+      "test_block": "B2",
+      "target_word": "two",
+      "proto_pred": "eight",
+      "proto_top1": false,
+      "proto_top3": false,
+      "adapt_pred": "eight",
+      "adapt_top1": false,
+      "adapt_top3": false
+    }
+  ]
+}
