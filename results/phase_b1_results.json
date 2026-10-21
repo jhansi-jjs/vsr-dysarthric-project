@@ -1,0 +1,123 @@
+{
+  "metadata": {
+    "timestamp": "2026-10-21T03:52:35Z",
+    "git_commit": "efc0c40a8bc9191c3a58bad6102773f07101fcc6",
+    "device": "cuda",
+    "gpu_name": "NVIDIA GeForce RTX 4050 Laptop GPU",
+    "phase": "Phase B1: Multi-Speaker Pretraining, Word-Level Segments & Augmentations"
+  },
+  "step_0_diagnostics": {
+    "selected_preprocessing": "resample_75",
+    "adabn_f05": {
+      "correct": 4,
+      "n": 30,
+      "stat": "4/30 (13.3%, 95% CI: [3.8%, 30.7%])"
+    },
+    "adabn_f02": {
+      "correct": 3,
+      "n": 20,
+      "stat": "3/20 (15.0%, 95% CI: [3.2%, 37.9%])"
+    },
+    "adabn_s8": {
+      "stat": "31/95 (32.6%, 95% CI: [23.4%, 43.0%])"
+    }
+  },
+  "ablation_results": {
+    "variant_baseline": {
+      "seen_s6": {
+        "correct": 10,
+        "n": 100,
+        "top1_stat": "10/100 (10.0%, 95% CI: [4.9%, 17.6%])",
+        "top3_acc": 31.0
+      },
+      "unseen_s7": {
+        "correct": 11,
+        "n": 100,
+        "top1_stat": "11/100 (11.0%, 95% CI: [5.6%, 18.8%])",
+        "top3_acc": 32.0
+      },
+      "unseen_s8": {
+        "correct": 1,
+        "n": 11,
+        "top1_stat": "1/11 (9.1%, 95% CI: [0.2%, 41.3%])",
+        "top3_acc": 36.36363636363637
+      },
+      "dysarthric_f05": {
+        "correct": 3,
+        "n": 30,
+        "top1_stat": "3/30 (10.0%, 95% CI: [2.1%, 26.5%])",
+        "top3_acc": 30.0
+      },
+      "dysarthric_f02": {
+        "correct": 2,
+        "n": 20,
+        "top1_stat": "2/20 (10.0%, 95% CI: [1.2%, 31.7%])",
+        "top3_acc": 30.0
+      }
+    },
+    "variant_plus_words": {
+      "seen_s6": {
+        "correct": 68,
+        "n": 100,
+        "top1_stat": "68/100 (68.0%, 95% CI: [57.9%, 77.0%])",
+        "top3_acc": 96.0
+      },
+      "unseen_s7": {
+        "correct": 28,
+        "n": 100,
+        "top1_stat": "28/100 (28.0%, 95% CI: [19.5%, 37.9%])",
+        "top3_acc": 59.0
+      },
+      "unseen_s8": {
+        "correct": 5,
+        "n": 11,
+        "top1_stat": "5/11 (45.5%, 95% CI: [16.7%, 76.6%])",
+        "top3_acc": 81.81818181818183
+      },
+      "dysarthric_f05": {
+        "correct": 4,
+        "n": 30,
+        "top1_stat": "4/30 (13.3%, 95% CI: [3.8%, 30.7%])",
+        "top3_acc": 30.0
+      },
+      "dysarthric_f02": {
+        "correct": 2,
+        "n": 20,
+        "top1_stat": "2/20 (10.0%, 95% CI: [1.2%, 31.7%])",
+        "top3_acc": 35.0
+      }
+    },
+    "variant_plus_words_aug": {
+      "seen_s6": {
+        "correct": 42,
+        "n": 100,
+        "top1_stat": "42/100 (42.0%, 95% CI: [32.2%, 52.3%])",
+        "top3_acc": 81.0
+      },
+      "unseen_s7": {
+        "correct": 38,
+        "n": 100,
+        "top1_stat": "38/100 (38.0%, 95% CI: [28.5%, 48.3%])",
+        "top3_acc": 71.0
+      },
+      "unseen_s8": {
+        "correct": 3,
+        "n": 11,
+        "top1_stat": "3/11 (27.3%, 95% CI: [6.0%, 61.0%])",
+        "top3_acc": 63.63636363636363
+      },
+      "dysarthric_f05": {
+        "correct": 4,
+        "n": 30,
+        "top1_stat": "4/30 (13.3%, 95% CI: [3.8%, 30.7%])",
+        "top3_acc": 30.0
+      },
+      "dysarthric_f02": {
+        "correct": 1,
+        "n": 20,
+        "top1_stat": "1/20 (5.0%, 95% CI: [0.1%, 24.9%])",
+        "top3_acc": 30.0
+      }
+    }
+  }
+}
