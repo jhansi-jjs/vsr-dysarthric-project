@@ -1,0 +1,153 @@
+{
+  "metadata": {
+    "timestamp": "2026-10-21T00:17:46Z",
+    "git_commit": "295777d923f87390b23ac9a18f7164a04432f025",
+    "device": "cuda",
+    "gpu_name": "NVIDIA GeForce RTX 4050 Laptop GPU",
+    "phase": "Phase A2: Diagnosis and Evaluation Redesign"
+  },
+  "control_test": {
+    "speaker": "s8 (Typical GRID speaker)",
+    "n_clips": 878,
+    "top1_acc": 36.78815489749431,
+    "top1_ci95": [
+      33.712984054669704,
+      40.091116173120724
+    ],
+    "top3_acc": 75.17084282460137,
+    "chance_level": 10.0,
+    "majority_class_acc": 10.70615034168565,
+    "uaspeech_control_video": "None available (UASpeech archives contain only F05, F02)"
+  },
+  "lobo_digit_benchmark": {
+    "F05": {
+      "zero_shot": {
+        "top1_acc": 13.333333333333334,
+        "top1_ci95": [
+          3.3333333333333335,
+          26.666666666666668
+        ],
+        "top3_acc": 40.0,
+        "n_eval": 30
+      },
+      "prototype_k1": {
+        "top1_acc": 0.0,
+        "top1_ci95": [
+          0.0,
+          0.0
+        ],
+        "top3_acc": 20.0,
+        "n_eval": 30
+      },
+      "adapter_k1": {
+        "top1_acc": 10.0,
+        "top1_ci95": [
+          0.0,
+          23.333333333333332
+        ],
+        "top3_acc": 26.666666666666668,
+        "n_eval": 30
+      },
+      "full_k1": {
+        "top1_acc": 3.3333333333333335,
+        "top1_ci95": [
+          0.0,
+          10.0
+        ],
+        "top3_acc": 23.333333333333332,
+        "n_eval": 30
+      },
+      "prototype_k2": {
+        "top1_acc": 6.666666666666667,
+        "top1_ci95": [
+          0.0,
+          16.666666666666664
+        ],
+        "top3_acc": 16.666666666666664,
+        "n_eval": 30
+      },
+      "chance_level": 10.0,
+      "majority_class": 10.0,
+      "n_total_clips": 30
+    },
+    "F02": {
+      "zero_shot": {
+        "top1_acc": 15.0,
+        "top1_ci95": [
+          0.0,
+          30.0
+        ],
+        "top3_acc": 25.0,
+        "n_eval": 20
+      },
+      "prototype_k1": {
+        "top1_acc": 20.0,
+        "top1_ci95": [
+          5.0,
+          40.0
+        ],
+        "top3_acc": 45.0,
+        "n_eval": 20
+      },
+      "adapter_k1": {
+        "top1_acc": 20.0,
+        "top1_ci95": [
+          5.0,
+          40.0
+        ],
+        "top3_acc": 45.0,
+        "n_eval": 20
+      },
+      "full_k1": {
+        "top1_acc": 5.0,
+        "top1_ci95": [
+          0.0,
+          15.0
+        ],
+        "top3_acc": 25.0,
+        "n_eval": 20
+      },
+      "chance_level": 10.0,
+      "majority_class": 10.0,
+      "n_total_clips": 20
+    }
+  },
+  "lobo_155_words_benchmark": {
+    "F05": {
+      "n_classes": 155,
+      "n_eval": 465,
+      "chance_level": 0.6451612903225806,
+      "majority_class": 0.6451612903225806,
+      "prototype_k1": {
+        "top1_acc": 0.43010752688172044,
+        "top1_ci95": [
+          0.0,
+          1.0752688172043012
+        ],
+        "top3_acc": 1.2903225806451613
+      },
+      "prototype_k2": {
+        "top1_acc": 0.43010752688172044,
+        "top1_ci95": [
+          0.0,
+          1.0752688172043012
+        ],
+        "top3_acc": 1.935483870967742
+      }
+    },
+    "F02": {
+      "n_classes": 155,
+      "n_eval": 310,
+      "chance_level": 0.6451612903225806,
+      "majority_class": 0.6451612903225806,
+      "prototype_k1": {
+        "top1_acc": 1.2903225806451613,
+        "top1_ci95": [
+          0.3225806451612903,
+          2.5806451612903225
+        ],
+        "top3_acc": 2.903225806451613
+      }
+    }
+  }
+}
