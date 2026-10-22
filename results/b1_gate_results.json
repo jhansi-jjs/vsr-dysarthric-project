@@ -1,0 +1,126 @@
+{
+  "metadata": {
+    "timestamp": "2026-10-22T03:07:20Z",
+    "git_commit": "8b574a2903a6f4e95da648605101224809e398aa",
+    "device": "cuda",
+    "gpu_name": "NVIDIA GeForce RTX 4050 Laptop GPU",
+    "phase": "Phase B1 Gate Verification"
+  },
+  "gate_table": {
+    "variant_1_baseline": {
+      "unseen_digit_top1": {
+        "correct": 18,
+        "n": 200,
+        "stat": "18/200 (9.0%, 95% CI: [5.4%, 13.9%])",
+        "acc": 9.0
+      },
+      "unseen_digit_top3": {
+        "correct": 53,
+        "n": 200,
+        "stat": "53/200 (26.5%, 95% CI: [20.5%, 33.2%])",
+        "acc": 26.5
+      },
+      "sentence_wer": 88.66666666666667,
+      "sentence_cer": 68.16673579427624,
+      "sentence_word_errors": 1064,
+      "sentence_total_words": 1200,
+      "sentence_char_errors": 3287,
+      "sentence_total_chars": 4822,
+      "f05_zero_shot_top1": {
+        "correct": 3,
+        "n": 30,
+        "stat": "3/30 (10.0%, 95% CI: [2.1%, 26.5%])",
+        "acc": 10.0
+      },
+      "f02_zero_shot_top1": {
+        "correct": 2,
+        "n": 20,
+        "stat": "2/20 (10.0%, 95% CI: [1.2%, 31.7%])",
+        "acc": 10.0
+      }
+    },
+    "variant_2_plus_words": {
+      "unseen_digit_top1": {
+        "correct": 60,
+        "n": 200,
+        "stat": "60/200 (30.0%, 95% CI: [23.7%, 36.9%])",
+        "acc": 30.0
+      },
+      "unseen_digit_top3": {
+        "correct": 129,
+        "n": 200,
+        "stat": "129/200 (64.5%, 95% CI: [57.4%, 71.1%])",
+        "acc": 64.5
+      },
+      "sentence_wer": 86.91666666666666,
+      "sentence_cer": 65.65740356698466,
+      "sentence_word_errors": 1043,
+      "sentence_total_words": 1200,
+      "sentence_char_errors": 3166,
+      "sentence_total_chars": 4822,
+      "f05_zero_shot_top1": {
+        "correct": 3,
+        "n": 30,
+        "stat": "3/30 (10.0%, 95% CI: [2.1%, 26.5%])",
+        "acc": 10.0
+      },
+      "f02_zero_shot_top1": {
+        "correct": 4,
+        "n": 20,
+        "stat": "4/20 (20.0%, 95% CI: [5.7%, 43.7%])",
+        "acc": 20.0
+      }
+    },
+    "variant_3_plus_words_aug": {
+      "unseen_digit_top1": {
+        "correct": 49,
+        "n": 200,
+        "stat": "49/200 (24.5%, 95% CI: [18.7%, 31.1%])",
+        "acc": 24.5
+      },
+      "unseen_digit_top3": {
+        "correct": 117,
+        "n": 200,
+        "stat": "117/200 (58.5%, 95% CI: [51.3%, 65.4%])",
+        "acc": 58.5
+      },
+      "sentence_wer": 88.5,
+      "sentence_cer": 75.81916217337205,
+      "sentence_word_errors": 1062,
+      "sentence_total_words": 1200,
+      "sentence_char_errors": 3656,
+      "sentence_total_chars": 4822,
+      "f05_zero_shot_top1": {
+        "correct": 2,
+        "n": 30,
+        "stat": "2/30 (6.7%, 95% CI: [0.8%, 22.1%])",
+        "acc": 6.666666666666667
+      },
+      "f02_zero_shot_top1": {
+        "correct": 3,
+        "n": 20,
+        "stat": "3/20 (15.0%, 95% CI: [3.2%, 37.9%])",
+        "acc": 15.0
+      }
+    }
+  },
+  "haar_summary": {
+    "grid_haar": "10/10 (100.0%)",
+    "uaspeech_f05_haar": "10/12 (83.3%)",
+    "uaspeech_f02_haar": "10/11 (90.9%)",
+    "webcam_haar": "1/1 (100.0%)"
+  },
+  "gate_evaluation": {
+    "gate_1_unseen_digit_above_37": {
+      "met": false,
+      "best_unseen_digit_acc": 30.0,
+      "threshold": 37.0
+    },
+    "gate_2_uaspeech_zero_shot_ci_excludes_chance_10": {
+      "met": false,
+      "f05_excludes_chance": false,
+      "f02_excludes_chance": false
+    },
+    "overall_gate_for_b2_met": false
+  }
+}
