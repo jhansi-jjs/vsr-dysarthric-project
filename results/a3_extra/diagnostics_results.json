@@ -1,0 +1,353 @@
+{
+  "metadata": {
+    "timestamp": "2026-10-22T07:49:37Z",
+    "branch": "a3-diagnostics",
+    "device": "cuda",
+    "execution_time_seconds": 3905.0108392238617
+  },
+  "task1_crop_qa": {
+    "grid_s8_strips_saved": 20,
+    "haar_stats": {
+      "F05": {
+        "total_clips": 765,
+        "detected_clips": 720,
+        "detection_rate": 94.11764705882352,
+        "ci95": [
+          92.20781787768686,
+          95.67737822977477
+        ],
+        "by_block": {
+          "B1": {
+            "detected": 222,
+            "total": 255,
+            "rate": 87.05882352941177,
+            "ci95": [
+              82.30823878558195,
+              90.92175960556523
+            ]
+          },
+          "B2": {
+            "detected": 251,
+            "total": 255,
+            "rate": 98.4313725490196,
+            "ci95": [
+              96.03261624460615,
+              99.5709906236798
+            ]
+          },
+          "B3": {
+            "detected": 247,
+            "total": 255,
+            "rate": 96.86274509803921,
+            "ci95": [
+              93.91217836863885,
+              98.63601574318133
+            ]
+          }
+        }
+      },
+      "F02": {
+        "total_clips": 509,
+        "detected_clips": 501,
+        "detection_rate": 98.42829076620825,
+        "ci95": [
+          96.92668798142991,
+          99.31906852601435
+        ],
+        "by_block": {
+          "B1": {
+            "detected": 253,
+            "total": 255,
+            "rate": 99.2156862745098,
+            "ci95": [
+              97.19566593760395,
+              99.90487443468051
+            ]
+          },
+          "B2": {
+            "detected": 248,
+            "total": 254,
+            "rate": 97.63779527559055,
+            "ci95": [
+              94.92964710016176,
+              99.12829040332346
+            ]
+          }
+        }
+      }
+    },
+    "failure_behavior": {
+      "stable_mouth_roi_grid": "In stable_mouth_roi() (notebook Cell 10 and dataset preparation), if 'boxes' is empty after sampling 8 frames, the function returns None. The clip is discarded, and the dataset loader increments 'skipped += 1'.",
+      "segment_speaker_uaspeech": "In segment_speaker() (notebook Cell 19), 12 frames across the multi-minute recording are sampled in Pass 1. If no face is detected ('not boxes:'), the entire speaker block returns [] and all utterances in that block are dropped. If at least one face box is detected, the median bounding box across those detections is computed and applied uniformly to every utterance segment across that entire block.",
+      "live_webcam_and_app": "In live_webcam and vsr_app.py, if face detection fails, the system falls back to a central crop box (w=0.4*W, h=0.4*H, x=0.3*W, y=0.2*H) or flags a low-confidence warning without crashing."
+    }
+  },
+  "task2_adabn": {
+    "variant_1_baseline": {
+      "F05": {
+        "n_eval": 30,
+        "chance": 10.0,
+        "zero_shot": {
+          "top1_k": 3,
+          "top1_acc": 10.0,
+          "top1_ci95": [
+            2.1117137029722572,
+            26.528845047420806
+          ],
+          "top1_stat": "3/30 (10.0%, 95% CI: [2.1%, 26.5%])",
+          "top3_k": 9,
+          "top3_acc": 30.0,
+          "top3_ci95": [
+            14.734518475470098,
+            49.39590414625537
+          ],
+          "top3_stat": "9/30 (30.0%, 95% CI: [14.7%, 49.4%])"
+        },
+        "adabn": {
+          "top1_k": 3,
+          "top1_acc": 10.0,
+          "top1_ci95": [
+            2.1117137029722572,
+            26.528845047420806
+          ],
+          "top1_stat": "3/30 (10.0%, 95% CI: [2.1%, 26.5%])",
+          "top3_k": 9,
+          "top3_acc": 30.0,
+          "top3_ci95": [
+            14.734518475470098,
+            49.39590414625537
+          ],
+          "top3_stat": "9/30 (30.0%, 95% CI: [14.7%, 49.4%])"
+        }
+      },
+      "F02": {
+        "n_eval": 20,
+        "chance": 10.0,
+        "zero_shot": {
+          "top1_k": 2,
+          "top1_acc": 10.0,
+          "top1_ci95": [
+            1.2348527170294807,
+            31.698271401908233
+          ],
+          "top1_stat": "2/20 (10.0%, 95% CI: [1.2%, 31.7%])",
+          "top3_k": 6,
+          "top3_acc": 30.0,
+          "top3_ci95": [
+            11.89315904057277,
+            54.278918227628914
+          ],
+          "top3_stat": "6/20 (30.0%, 95% CI: [11.9%, 54.3%])"
+        },
+        "adabn": {
+          "top1_k": 2,
+          "top1_acc": 10.0,
+          "top1_ci95": [
+            1.2348527170294807,
+            31.698271401908233
+          ],
+          "top1_stat": "2/20 (10.0%, 95% CI: [1.2%, 31.7%])",
+          "top3_k": 6,
+          "top3_acc": 30.0,
+          "top3_ci95": [
+            11.89315904057277,
+            54.278918227628914
+          ],
+          "top3_stat": "6/20 (30.0%, 95% CI: [11.9%, 54.3%])"
+        }
+      }
+    },
+    "variant_2_plus_words": {
+      "F05": {
+        "n_eval": 30,
+        "chance": 10.0,
+        "zero_shot": {
+          "top1_k": 3,
+          "top1_acc": 10.0,
+          "top1_ci95": [
+            2.1117137029722572,
+            26.528845047420806
+          ],
+          "top1_stat": "3/30 (10.0%, 95% CI: [2.1%, 26.5%])",
+          "top3_k": 9,
+          "top3_acc": 30.0,
+          "top3_ci95": [
+            14.734518475470098,
+            49.39590414625537
+          ],
+          "top3_stat": "9/30 (30.0%, 95% CI: [14.7%, 49.4%])"
+        },
+        "adabn": {
+          "top1_k": 2,
+          "top1_acc": 6.666666666666667,
+          "top1_ci95": [
+            0.8178134460656301,
+            22.073540152296186
+          ],
+          "top1_stat": "2/30 (6.7%, 95% CI: [0.8%, 22.1%])",
+          "top3_k": 7,
+          "top3_acc": 23.333333333333332,
+          "top3_ci95": [
+            9.933786495801971,
+            42.28365229782194
+          ],
+          "top3_stat": "7/30 (23.3%, 95% CI: [9.9%, 42.3%])"
+        }
+      },
+      "F02": {
+        "n_eval": 20,
+        "chance": 10.0,
+        "zero_shot": {
+          "top1_k": 4,
+          "top1_acc": 20.0,
+          "top1_ci95": [
+            5.733399705003276,
+            43.66140029966682
+          ],
+          "top1_stat": "4/20 (20.0%, 95% CI: [5.7%, 43.7%])",
+          "top3_k": 7,
+          "top3_acc": 35.0,
+          "top3_ci95": [
+            15.390920478454115,
+            59.21885345328282
+          ],
+          "top3_stat": "7/20 (35.0%, 95% CI: [15.4%, 59.2%])"
+        },
+        "adabn": {
+          "top1_k": 4,
+          "top1_acc": 20.0,
+          "top1_ci95": [
+            5.733399705003276,
+            43.66140029966682
+          ],
+          "top1_stat": "4/20 (20.0%, 95% CI: [5.7%, 43.7%])",
+          "top3_k": 8,
+          "top3_acc": 40.0,
+          "top3_ci95": [
+            19.119006072530716,
+            63.94574126925103
+          ],
+          "top3_stat": "8/20 (40.0%, 95% CI: [19.1%, 63.9%])"
+        }
+      }
+    },
+    "variant_3_plus_words_aug": {
+      "F05": {
+        "n_eval": 30,
+        "chance": 10.0,
+        "zero_shot": {
+          "top1_k": 2,
+          "top1_acc": 6.666666666666667,
+          "top1_ci95": [
+            0.8178134460656301,
+            22.073540152296186
+          ],
+          "top1_stat": "2/30 (6.7%, 95% CI: [0.8%, 22.1%])",
+          "top3_k": 7,
+          "top3_acc": 23.333333333333332,
+          "top3_ci95": [
+            9.933786495801971,
+            42.28365229782194
+          ],
+          "top3_stat": "7/30 (23.3%, 95% CI: [9.9%, 42.3%])"
+        },
+        "adabn": {
+          "top1_k": 3,
+          "top1_acc": 10.0,
+          "top1_ci95": [
+            2.1117137029722572,
+            26.528845047420806
+          ],
+          "top1_stat": "3/30 (10.0%, 95% CI: [2.1%, 26.5%])",
+          "top3_k": 9,
+          "top3_acc": 30.0,
+          "top3_ci95": [
+            14.734518475470098,
+            49.39590414625537
+          ],
+          "top3_stat": "9/30 (30.0%, 95% CI: [14.7%, 49.4%])"
+        }
+      },
+      "F02": {
+        "n_eval": 20,
+        "chance": 10.0,
+        "zero_shot": {
+          "top1_k": 3,
+          "top1_acc": 15.0,
+          "top1_ci95": [
+            3.207093718546371,
+            37.8926826545314
+          ],
+          "top1_stat": "3/20 (15.0%, 95% CI: [3.2%, 37.9%])",
+          "top3_k": 5,
+          "top3_acc": 25.0,
+          "top3_ci95": [
+            8.657146910143462,
+            49.10458717079575
+          ],
+          "top3_stat": "5/20 (25.0%, 95% CI: [8.7%, 49.1%])"
+        },
+        "adabn": {
+          "top1_k": 2,
+          "top1_acc": 10.0,
+          "top1_ci95": [
+            1.2348527170294807,
+            31.698271401908233
+          ],
+          "top1_stat": "2/20 (10.0%, 95% CI: [1.2%, 31.7%])",
+          "top3_k": 5,
+          "top3_acc": 25.0,
+          "top3_ci95": [
+            8.657146910143462,
+            49.10458717079575
+          ],
+          "top3_stat": "5/20 (25.0%, 95% CI: [8.7%, 49.1%])"
+        }
+      }
+    }
+  },
+  "task3_gate_numbers": {
+    "variant_1_baseline": {
+      "f05": {
+        "correct": 3,
+        "n": 30,
+        "stat": "3/30 (10.0%, 95% CI: [2.1%, 26.5%])",
+        "acc": 10.0
+      },
+      "f02": {
+        "correct": 2,
+        "n": 20,
+        "stat": "2/20 (10.0%, 95% CI: [1.2%, 31.7%])",
+        "acc": 10.0
+      }
+    },
+    "variant_2_plus_words": {
+      "f05": {
+        "correct": 3,
+        "n": 30,
+        "stat": "3/30 (10.0%, 95% CI: [2.1%, 26.5%])",
+        "acc": 10.0
+      },
+      "f02": {
+        "correct": 4,
+        "n": 20,
+        "stat": "4/20 (20.0%, 95% CI: [5.7%, 43.7%])",
+        "acc": 20.0
+      }
+    },
+    "variant_3_plus_words_aug": {
+      "f05": {
+        "correct": 2,
+        "n": 30,
+        "stat": "2/30 (6.7%, 95% CI: [0.8%, 22.1%])",
+        "acc": 6.666666666666667
+      },
+      "f02": {
+        "correct": 3,
+        "n": 20,
+        "stat": "3/20 (15.0%, 95% CI: [3.2%, 37.9%])",
+        "acc": 15.0
+      }
+    }
+  }
+}
