@@ -126,13 +126,7 @@
       line-height: 1.2;
     }
     .module-tag {
-      background: var(--slate);
-      color: #FFFFFF;
-      font-size: 11px;
-      font-weight: 700;
-      padding: 6px 14px;
-      border-radius: 20px;
-      letter-spacing: 0.04em;
+      display: none !important;
     }
 
     /* Content Layout Grids */
@@ -311,22 +305,80 @@
       color: var(--cyan);
       margin-top: 8px;
     }
-    .team-grid {
+    .hero-layout {
       display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 16px;
-      margin-top: 20px;
+      grid-template-columns: 1fr 1.6fr;
+      gap: 24px;
+      margin-top: 16px;
+      align-items: stretch;
     }
-    .team-card {
+    .hero-presenter-card {
+      background: var(--slate);
+      border: 1px solid #334155;
+      border-top: 4px solid var(--cyan);
+      border-radius: 12px;
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+    .presenter-tag {
+      font-size: 11px;
+      font-weight: 800;
+      color: var(--cyan);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      margin-bottom: 6px;
+    }
+    .presenter-name {
+      font-size: 26px;
+      font-weight: 800;
+      color: #FFFFFF;
+      margin-bottom: 6px;
+    }
+    .presenter-roll {
+      font-size: 13.5px;
+      font-weight: 700;
+      color: var(--cyan);
+      margin-bottom: 12px;
+      background: rgba(14, 165, 233, 0.12);
+      padding: 6px 12px;
+      border-radius: 6px;
+      display: inline-block;
+    }
+    .presenter-dept {
+      font-size: 12px;
+      color: #94A3B8;
+      line-height: 1.5;
+    }
+    .pillars-stack {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      justify-content: center;
+    }
+    .pillar-card {
       background: var(--slate);
       border: 1px solid #334155;
       border-radius: 10px;
-      padding: 16px;
-      color: white;
+      padding: 14px 18px;
     }
-    .team-card h4 { font-size: 13px; color: var(--cyan); font-weight: 700; margin-bottom: 4px; }
-    .team-card h3 { font-size: 14px; font-weight: 700; color: white; margin-bottom: 6px; }
-    .team-card p { font-size: 11px; color: #94A3B8; line-height: 1.4; }
+    .pillar-card-blue { border-left: 4px solid var(--blue); }
+    .pillar-card-green { border-left: 4px solid var(--emerald); }
+    .pillar-card-amber { border-left: 4px solid var(--amber); }
+    .pillar-title {
+      font-size: 12.5px;
+      font-weight: 700;
+      color: #FFFFFF;
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 4px;
+    }
+    .pillar-desc {
+      font-size: 11px;
+      color: #94A3B8;
+      line-height: 1.4;
+    }
   </style>
 </head>
 <body>
@@ -353,26 +405,26 @@
         <h2>Few-Shot Personalization for Dysarthric Speakers via Spatio-Temporal Networks</h2>
         <p style="font-size: 14px; color: #94A3B8; margin-top: 10px;">A zero-audio assistive lip-reading system adapting to severe neuromotor pathology with 1–5 word examples.</p>
       </div>
-      <div class="team-grid">
-        <div class="team-card">
-          <h4>MODULE 1</h4>
-          <h3>Student 1: Preprocessing</h3>
-          <p>Stable median mouth ROI, jitter fix, 25 FPS linear resampling, luminance match.</p>
+      <div class="hero-layout">
+        <div class="hero-presenter-card">
+          <div class="presenter-tag">TEAM / PRESENTER</div>
+          <h2 class="presenter-name">Jhansi Lakshmi</h2>
+          <div class="presenter-roll">Roll No: AM.SC.U4AIE24047</div>
+          <p class="presenter-dept">Dept. of Artificial Intelligence & Data Science<br>Deep Learning Capstone & Hackathon Project</p>
         </div>
-        <div class="team-card">
-          <h4>MODULE 2</h4>
-          <h3>Student 2: DL Architect</h3>
-          <p>LipNet (3D-CNN + BiGRU + CTC), multi-speaker source pretraining, word cuts.</p>
-        </div>
-        <div class="team-card">
-          <h4>MODULE 3</h4>
-          <h3>Student 3: Adaptation Lead</h3>
-          <p>Residual bottleneck adapters, cosine prototypes, LOBO folds & exact CIs.</p>
-        </div>
-        <div class="team-card">
-          <h4>MODULE 4</h4>
-          <h3>Student 4: Integration Lead</h3>
-          <p>Live desktop app (vsr_app.py), AAC phrase mode, Phase B1 ablation gates.</p>
+        <div class="pillars-stack">
+          <div class="pillar-card pillar-card-blue">
+            <div class="pillar-title"><span>MODULE 1: DATA ENGINEERING</span><span style="color: var(--blue);">3.5 MINS</span></div>
+            <p class="pillar-desc">Stable median mouth ROI (jitter fix), hardware-decoupled 25 FPS linear index resampling, and luminance normalization.</p>
+          </div>
+          <div class="pillar-card pillar-card-green">
+            <div class="pillar-title"><span>MODULE 2: DEEP LEARNING ARCHITECTURE</span><span style="color: var(--emerald);">3.5 MINS</span></div>
+            <p class="pillar-desc">LipNet (3D-CNN + 2-layer BiGRU + CTC, 12.5M params) pretrained on 7,073 multi-speaker sentences + 7,122 word cuts.</p>
+          </div>
+          <div class="pillar-card pillar-card-amber">
+            <div class="pillar-title"><span>MODULE 3 & 4: ADAPTATION & REAL-TIME AAC</span><span style="color: var(--amber);">8.0 MINS</span></div>
+            <p class="pillar-desc">Bottleneck adapters (99.2% frozen), LOBO exact CIs, and real-time desktop GUI (vsr_app.py) for personalized AAC phrases.</p>
+          </div>
         </div>
       </div>
     </div>
